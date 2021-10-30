@@ -3,6 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/MrGuard/app/src/main/res/drawable/ic_emergency.xml" value="0.24814814814814815" />
         <entry key="..\:/MrGuard/app/src/main/res/drawable/stroke_btn.xml" value="0.24814814814814815" />
         <entry key="..\:/MrGuard/app/src/main/res/font/andada.xml" value="0.16979166666666667" />
         <entry key="..\:/MrGuard/app/src/main/res/layout/activity_main.xml" value="0.25416666666666665" />
