@@ -47,6 +47,7 @@
             android:hint="MOBILE NUMBER"
             android:inputType="phone"
             android:letterSpacing="0.5"
+            android:backgroundTint="@color/white"
             android:paddingHorizontal="20dp"
             android:paddingVertical="10dp"
             android:textAlignment="center"
