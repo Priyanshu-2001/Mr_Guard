@@ -1,4 +1,4 @@
-package com.geek.mrguard.login_signUp
+package com.geek.mrguard.UI.login_signUp
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment

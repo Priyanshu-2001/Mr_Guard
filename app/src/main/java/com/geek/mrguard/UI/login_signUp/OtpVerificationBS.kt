@@ -1,11 +1,13 @@
-package com.geek.mrguard.login_signUp
+package com.geek.mrguard.UI.login_signUp
 
+import android.content.Intent
 import android.os.Bundle
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.geek.mrguard.R
+import com.geek.mrguard.UI.dashBorad.DashBoard
 import com.geek.mrguard.databinding.FragmentOtpVerificationBSListDialogBinding
 
 
@@ -25,8 +27,14 @@ class OtpVerificationBS : BottomSheetDialogFragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentOtpVerificationBSListDialogBinding.inflate(inflater, container, false)
+        binding.verifyOTP.setOnClickListener {
+            nextScreenIntent()
+        }
         return binding.root
+    }
 
+    private fun nextScreenIntent() {
+        startActivity(Intent(context, DashBoard::class.java))
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
