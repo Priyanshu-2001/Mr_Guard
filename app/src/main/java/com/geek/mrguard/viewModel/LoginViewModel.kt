@@ -1,5 +1,6 @@
 package com.geek.mrguard.viewModel
 
+import android.app.Activity
 import android.app.Application
 import android.content.Context
 import android.content.Intent
@@ -52,12 +53,17 @@ class LoginViewModel(val service: LoginService, var context123 : Context?) : Vie
     fun verifyCred(){
 
         res.observeForever {
-            it.apply{
+            it.let{
                 Log.e("TAG", "signInREPONSE : $it")
-                if (success) {
-                    nextScreenIntent()
-                } else {
-                    Toast.makeText(context123, "There is some error", Toast.LENGTH_SHORT).show()
+                if(it!=null){
+                    if (it.success) {
+                        nextScreenIntent()
+                    } else {
+                        Toast.makeText(context123, "There is some error\nplease resend the code", Toast.LENGTH_SHORT).show()
+                    }
+                }else{
+                    Toast.makeText(context123, "There is some error\n" +
+                            "please resend the code", Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -65,6 +71,7 @@ class LoginViewModel(val service: LoginService, var context123 : Context?) : Vie
 
     private fun nextScreenIntent() {
         context123?.startActivity(Intent(context123, DashBoard::class.java))
+        (context123 as Activity).finishAffinity()
     }
 
     override fun onCleared() {
