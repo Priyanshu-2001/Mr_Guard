@@ -4,7 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
+        <variable
+            name="model"
+            type="com.geek.mrguard.viewModel.LoginViewModel" />
     </data>
 
     <FrameLayout
@@ -52,6 +54,7 @@
                 android:gravity="center"
                 android:hint="MOBILE NUMBER"
                 android:inputType="phone"
+                android:text="@={model.phoneNumber}"
                 android:textCursorDrawable="@null"
                 android:letterSpacing="0.5"
                 android:backgroundTint="@color/white"
