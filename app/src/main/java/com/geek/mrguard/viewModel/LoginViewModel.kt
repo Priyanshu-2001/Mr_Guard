@@ -69,7 +69,7 @@ class LoginViewModel(val service: LoginService, var context123 : Context?) : Vie
         }
     }
 
-    private fun nextScreenIntent() {
+     fun nextScreenIntent() {
         context123?.startActivity(Intent(context123, DashBoard::class.java))
         (context123 as Activity).finishAffinity()
     }

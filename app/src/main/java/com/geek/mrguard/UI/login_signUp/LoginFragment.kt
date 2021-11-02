@@ -1,15 +1,21 @@
 package com.geek.mrguard.UI.login_signUp
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.app.ActivityCompat.finishAffinity
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import com.ebanx.swipebtn.OnStateChangeListener
 import com.geek.mrguard.R
+import com.geek.mrguard.UI.dashBorad.DashBoard
 import com.geek.mrguard.databinding.FragmentLoginFragBinding
+import com.geek.mrguard.viewModel.LoginViewModel
 
 class LoginFragment : Fragment() {
 
@@ -25,6 +31,18 @@ class LoginFragment : Fragment() {
                 R.id.action_login_frag_to_otpFragment
             )
         }
+
+        binding.swipeBtn.setOnStateChangeListener {
+            if(it){
+                startActivity(Intent(context, DashBoard::class.java))
+               (context as Activity).finishAffinity()
+            }
+            else{
+                print("Won't know")
+            }
+        }
+
+
         return binding.root
     }
 
