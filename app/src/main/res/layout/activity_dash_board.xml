@@ -3,67 +3,50 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <data>
-
-    </data>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.drawerlayout.widget.DrawerLayout
+        android:id="@+id/drawerLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".UI.dashBorad.DashBoard">
+        android:layout_height="match_parent">
 
-
-        <fragment
-            android:id="@+id/frag_map"
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            android:name="com.google.android.gms.maps.SupportMapFragment"
-            app:layout_constraintTop_toTopOf="parent" />
+            tools:context=".UI.dashBorad.DashBoard">
+            <ImageButton
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginTop="40dp"
+                android:layout_marginStart="20dp"
+                android:backgroundTint="@color/white"
+                android:layout_gravity="start"
+                android:elevation="10dp"
+                android:id="@+id/drawerIcon"
+                android:src="@drawable/hamburger"
+                />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/bottomSheet"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:behavior_hideable="false"
-            android:background="@drawable/bottom_sheet_bg"
-            android:elevation="20dp"
-            app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
 
-            <View
-                android:id="@+id/design"
-                android:layout_width="70dp"
-                android:layout_height="4dp"
-                android:layout_marginTop="10dp"
-                android:background="@drawable/stroke_btn"
-                android:backgroundTint="#6A6A6A"
+            <fragment
+                android:id="@+id/frag_map"
+                android:name="com.google.android.gms.maps.SupportMapFragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
+            <include
+                layout="@layout/chat_fragment"/>
 
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
+        <com.google.android.material.navigation.NavigationView
+            android:id="@+id/nav_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            app:headerLayout="@layout/header"
+            app:elevation="10dp"
+            app:menu="@menu/drawer" />
+    </androidx.drawerlayout.widget.DrawerLayout>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="1dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:text="Chat with Police"
-                android:textSize="20sp"
-                android:textColor="@color/black"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/design"/>
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

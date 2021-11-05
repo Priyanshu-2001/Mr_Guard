@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="300dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/app_bg"
+    android:gravity="bottom"
+    android:orientation="vertical"
+    android:padding="25dp">
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:layout_gravity="center"
+        android:id="@+id/pImage"
+        android:layout_marginTop="25dp"
+        android:layout_marginBottom="15dp"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="false"
+        app:lottie_progress="60"
+        app:lottie_rawRes="@raw/profile_animation"
+        app:lottie_repeatCount="3"
+        app:lottie_speed="0.75" />
+
+    <TextView
+        android:id="@+id/pName"
+        android:layout_width="wrap_content"
+        android:layout_height="23dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="5dp"
+        android:textColor="@color/black"
+        android:fontFamily="@font/rubik_bold"
+        android:text="Profile Name"
+        android:textSize="21sp" />
+
+    <TextView
+        android:id="@+id/profile_number"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="5dp"
+        android:textColor="@color/black"
+        android:fontFamily="@font/rubik"
+        android:text="Email"
+        android:textSize="12sp" />
+</LinearLayout>

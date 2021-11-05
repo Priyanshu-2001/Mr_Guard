@@ -3,11 +3,19 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/MrGuard/app/src/main/res/drawable/bottom_sheet_bg.xml" value="0.24444444444444444" />
+        <entry key="..\:/MrGuard/app/src/main/res/drawable/circle_green.xml" value="0.24444444444444444" />
+        <entry key="..\:/MrGuard/app/src/main/res/drawable/hamburger.xml" value="0.24444444444444444" />
+        <entry key="..\:/MrGuard/app/src/main/res/drawable/ic_send.xml" value="0.24444444444444444" />
         <entry key="..\:/MrGuard/app/src/main/res/font/andada.xml" value="0.16979166666666667" />
+        <entry key="..\:/MrGuard/app/src/main/res/layout/activity_dash_board.xml" value="0.176" />
         <entry key="..\:/MrGuard/app/src/main/res/layout/activity_main.xml" value="0.25416666666666665" />
+        <entry key="..\:/MrGuard/app/src/main/res/layout/chat_fragment.xml" value="0.2" />
         <entry key="..\:/MrGuard/app/src/main/res/layout/fragment_login_frag.xml" value="0.176" />
         <entry key="..\:/MrGuard/app/src/main/res/layout/fragment_otp_fragment.xml" value="0.264" />
         <entry key="..\:/MrGuard/app/src/main/res/layout/fragment_otp_verification_b_s_list_dialog.xml" value="0.1390625" />
+        <entry key="..\:/MrGuard/app/src/main/res/layout/header.xml" value="0.25" />
+        <entry key="..\:/MrGuard/app/src/main/res/menu/drawer.xml" value="0.19635416666666666" />
         <entry key="..\:/Users/Rishabh Raj Dhiman/AndroidStudioProjects/Mr_Guard/app/src/main/res/drawable/app_bg.xml" value="0.2484375" />
         <entry key="..\:/Users/Rishabh Raj Dhiman/AndroidStudioProjects/Mr_Guard/app/src/main/res/drawable/bottom_sheet_bg.xml" value="0.2484375" />
         <entry key="..\:/Users/Rishabh Raj Dhiman/AndroidStudioProjects/Mr_Guard/app/src/main/res/drawable/gradient_button.xml" value="0.2484375" />
