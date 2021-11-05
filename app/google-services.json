@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "980492939670",
+    "project_id": "mr-guard-162e5",
+    "storage_bucket": "mr-guard-162e5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:980492939670:android:3b5b7c8d9d46410cd7adb7",
+        "android_client_info": {
+          "package_name": "com.geek.mrguard"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "980492939670-b54pvv7m04mknqbq7c1hv5hmmre7bsjc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA-2fm1yQ0j3yae4bo4hf6JG4e_hLgC0n0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "980492939670-b54pvv7m04mknqbq7c1hv5hmmre7bsjc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

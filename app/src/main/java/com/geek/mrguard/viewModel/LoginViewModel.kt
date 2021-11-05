@@ -35,10 +35,6 @@ class LoginViewModel(val service: LoginService, var context123 : Context?) : Vie
             Log.e("TAG", "Login: ${hash.value}")
             Log.e("TAG", "Login: ${phoneNumber.value}")
             Log.e("TAG", "Login: ${otp.value}")
-//            val data = service.login(hash.value,
-//                phoneNumber.value,
-//                otp.value!!).value
-//            Log.e("TAG", "Login: data $data")
             res.postValue(service.login(hash.value,
                 phoneNumber.value,
                 otp.value!!).value)

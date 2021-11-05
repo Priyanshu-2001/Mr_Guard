@@ -34,9 +34,9 @@ class OtpFragment : Fragment() {
         }
         binding.sendOTP.setOnClickListener {
             val phoneNumber = binding.phoneNumber.text.toString()
-            (model as LoginViewModel).phoneNumber.value = phoneNumber
+            model.phoneNumber.value = phoneNumber
             Log.e("TAG", "onCreateView: $phoneNumber")
-            (model as LoginViewModel).getOTP()
+            model.getOTP()
             OtpVerificationBS().show(parentFragmentManager,"verify")
         }
         return binding.root

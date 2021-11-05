@@ -39,6 +39,9 @@ class OtpVerificationBS : BottomSheetDialogFragment() {
             model.setOTP(binding.OTP.text.toString())
             model.login()
         }
+        binding.resendBtn.setOnClickListener{
+            model.getOTP()
+        }
         return binding.root
     }
 

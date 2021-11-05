@@ -13,6 +13,7 @@ class LoginService(private val service: LoginServiceApi) {
         val hash = MutableLiveData<String>()
         Log.e("service/repo", "sendOTP: $phone" )
         val result = service.getOtp(params(phone.toString()))
+        Log.e(Companion.TAG, "sendOTP: ", )
         if(result.body()!=null){
             hash.postValue(result.body()?.secretHash.toString())
             Log.e("TAG", "sendOTP hash: ${result.body()?.secretHash.toString()}" )
@@ -28,5 +29,9 @@ class LoginService(private val service: LoginServiceApi) {
         val result = service.login(obj)
 //        Log.e("TAG", "login: ${result.body()}", )
         return MutableLiveData(result.body())
+    }
+
+    companion object {
+        const val TAG = "SERVICE CALL"
     }
 }
