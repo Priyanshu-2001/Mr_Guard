@@ -1,5 +1,6 @@
 package com.geek.mrguard.UI.dashBoard.Police
 
+import android.Manifest
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
@@ -20,28 +21,27 @@ import androidx.lifecycle.ViewModelProvider
 import com.geek.mrguard.R
 import com.geek.mrguard.UI.MainActivity
 import com.geek.mrguard.UI.dashBoard.commonUser.NormalUserDashBoard
+import com.geek.mrguard.adapters.ChatAdapter
 import com.geek.mrguard.data.raiseAlert
 import com.geek.mrguard.databinding.ActivityDashBoardBinding
+import com.geek.mrguard.services.UpdatePolicePersonnelCoordinates
+import com.geek.mrguard.utils.PermissionCheck
 import com.geek.mrguard.viewModel.chatViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
-import com.geek.mrguard.adapters.ChatAdapter
 import io.socket.client.IO
 import io.socket.client.Socket
 import io.socket.emitter.Emitter
 import kotlinx.android.synthetic.main.activity_dash_board.*
+import kotlinx.android.synthetic.main.activity_normal_user_dash_board.*
 import kotlinx.android.synthetic.main.chat_fragment.*
 import org.json.JSONException
 import org.json.JSONObject
 import java.util.*
-import io.socket.engineio.client.transports.Polling
-import io.socket.engineio.client.transports.WebSocket
 
 
 class PoliceDashBoard : AppCompatActivity(), OnMapReadyCallback {
@@ -58,7 +58,8 @@ class PoliceDashBoard : AppCompatActivity(), OnMapReadyCallback {
     private val roomID = 3002
     private val phoneNumber = 9877371590
     lateinit var adapter: ChatAdapter
-//    var options: IO.Options = IO.Options.builder() // IO factory options
+
+    //    var options: IO.Options = IO.Options.builder() // IO factory options
 //        .setForceNew(false)
 //        .setMultiplex(true) // low-level engine options
 //        .setTransports(arrayOf(Polling.NAME, WebSocket.NAME))
@@ -115,10 +116,10 @@ class PoliceDashBoard : AppCompatActivity(), OnMapReadyCallback {
             obj.put("roomId", roomID)
             obj.put("victimProfile", victimProfile)
             obj.put("policeProfile", policeProfile)
-            Log.e("TAG", "chat_message: "+ on("chat_message", onNewMessage) )
+            Log.e("TAG", "chat_message: " + on("chat_message", onNewMessage))
             on("joinMessage", messageListener)
             emit("policeManJoin", obj)
-            Log.e("TAG", "isConnected"+ mSocket?.connected()  + mSocket?.isActive )
+            Log.e("TAG", "isConnected" + mSocket?.connected() + mSocket?.isActive)
         }
     }
 
@@ -156,6 +157,7 @@ class PoliceDashBoard : AppCompatActivity(), OnMapReadyCallback {
                     or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN)
             window.statusBarColor = Color.TRANSPARENT
         }
+
         viewModel = ViewModelProvider(this).get(chatViewModel::class.java)
         viewModel.message.observeForever {
             adapter = ChatAdapter(this, it)
@@ -183,6 +185,45 @@ class PoliceDashBoard : AppCompatActivity(), OnMapReadyCallback {
                     startActivity(Intent(this, MainActivity::class.java))
                     true
                 }
+                "Current Location" -> {
+                    if (ActivityCompat.checkSelfPermission(
+                            this,
+                            android.Manifest.permission.ACCESS_FINE_LOCATION
+                        )
+                        == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                            this,
+                            android.Manifest.permission.ACCESS_COARSE_LOCATION
+                        )
+                        == PackageManager.PERMISSION_GRANTED
+                    ) {
+                        binding.drawerLayout.close()
+                        Toast.makeText(
+                            this,
+                            "Hold on !! \n we fetching your current coordinates",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        if (currentLocation == null) {
+                            val task = fusedLocationProviderClient?.lastLocation
+                            task?.addOnCompleteListener { loc ->
+                                if (loc.isSuccessful) {
+                                    val latlong = LatLng(loc.result.latitude, loc.result.longitude)
+                                    UpdatePolicePersonnelCoordinates().updateCoordinate(
+                                        latlong,
+                                        this
+                                    )
+                                }
+                            }
+                        } else {
+                            val latlong =
+                                LatLng(currentLocation?.latitude!!, currentLocation?.longitude!!)
+                            UpdatePolicePersonnelCoordinates().updateCoordinate(latlong, this)
+                        }
+
+                    } else {
+                        PermissionCheck().requestPermissions(this)
+                    }
+                    true
+                }
                 else -> {
                     print("Nothing to show")
                     false
@@ -207,7 +248,7 @@ class PoliceDashBoard : AppCompatActivity(), OnMapReadyCallback {
             runOnUiThread(Runnable {
                 Toast.makeText(this, "received in police", Toast.LENGTH_SHORT).show()
                 val data = args[0] as JSONObject
-                Log.e("pulici got msg ", ": ${data.getString("msg")} ", )
+                Log.e("pulici got msg ", ": ${data.getString("msg")} ")
                 Log.e("TAG", "msg received in pulici  ")
                 val message: String
                 try {
