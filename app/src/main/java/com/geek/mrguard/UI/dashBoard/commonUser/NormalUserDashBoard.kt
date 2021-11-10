@@ -12,6 +12,7 @@ import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import com.geek.mrguard.Globals
 import com.geek.mrguard.R
+import com.geek.mrguard.SocketIOClient
 import com.geek.mrguard.UI.MainActivity
 import com.geek.mrguard.data.raiseAlert
 import com.geek.mrguard.databinding.ActivityNormalUserDashBoardBinding
@@ -35,7 +36,8 @@ class NormalUserDashBoard : AppCompatActivity() {
     lateinit var progressDialog : ProgressDialog
     private fun initializeSocket() {
         try {
-            mSocket = IO.socket("https://police-backend-deploy.herokuapp.com/")
+//            mSocket = IO.socket("https://police-backend-deploy.herokuapp.com/")
+            mSocket = SocketIOClient.getInstance(this)
         } catch (e: Exception) {
             Log.e(TAG, "initializeSocket: ${e.printStackTrace()}")
         }
@@ -49,14 +51,12 @@ class NormalUserDashBoard : AppCompatActivity() {
         initializeSocket()
         mSocket?.connect()
         binding.raiseAlert.setOnStateChangeListener {
-            Log.e(TAG, "onCreate: $it")
             if (it) {
 //                initializeSocket()
 
                 mSocket?.run {
 //                    val roomId = FirebaseDatabase.getInstance().reference.push().key // generates random roomID
                     val roomId  = 3002
-//                    emit("victimJoin", raiseAlert(34.5, 35.0, 8872365433, roomId))
                     val obj  = JSONObject()
                     obj.put("roomId",roomId)
                     obj.put("lat","30.722")

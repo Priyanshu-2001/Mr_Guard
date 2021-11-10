@@ -117,6 +117,7 @@ class PoliceDashBoard : AppCompatActivity(), OnMapReadyCallback {
             Log.e("TAG", "chat_message: "+ on("chat_message", onNewMessage) )
             on("joinMessage", messageListener)
             emit("policeManJoin", obj)
+            Log.e("TAG", "isConnected"+ mSocket?.connected()  + mSocket?.isActive )
         }
     }
 

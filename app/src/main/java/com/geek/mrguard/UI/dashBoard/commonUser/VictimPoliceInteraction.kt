@@ -1,12 +1,14 @@
 package com.geek.mrguard.UI.dashBoard.commonUser
 
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import com.geek.mrguard.R
+import com.geek.mrguard.SocketIOClient
 import com.geek.mrguard.adapters.ChatAdapter
 import com.geek.mrguard.databinding.ActivityVictimPoliceInteractionBinding
 import com.geek.mrguard.viewModel.chatViewModel
@@ -25,41 +27,20 @@ class VictimPoliceInteraction : AppCompatActivity() {
     private val roomID = 3002
     private val phoneNumber = 9877371590
     lateinit var adapter: ChatAdapter
-//    private var options: IO.Options = IO.Options.builder() // IO factory options
-//        .setForceNew(false)
-//        .setMultiplex(true) // low-level engine options
-//        .setTransports(arrayOf(Polling.NAME, WebSocket.NAME))
-//        .setUpgrade(true)
-//        .setRememberUpgrade(false)
-//        .setReconnection(true)
-//        .setReconnectionAttempts(Int.MAX_VALUE)
-//        .setReconnectionDelay(1000)
-//        .setReconnectionDelayMax(5000)
-//        .setRandomizationFactor(0.5)
-//        .setTimeout(20000) // Socket options
-//        .setAuth(null)
-//        .build()
 
-    private fun initializeSocket() {
+
+    init{
         try {
-            mSocket = IO.socket("https://police-backend-deploy.herokuapp.com/")
-//            mSocket = IO.socket("https://police-backend-deploy.herokuapp.com/",options)
+            mSocket = SocketIOClient.getInstance(this)
+            mSocket?.connect()
             Log.e(
                 "TAG", "initializeSocket: " + mSocket?.connect()
             )
-            mSocket?.apply {
-                Log.e("Victim socket ", "onCreate: " + on("chat_message", onNewMessage))
-                Log.e("victim socker", "onCreate: " + on("joinMessage", joinMessage))
-            }
         } catch (e: Exception) {
-            Log.e(NormalUserDashBoard.TAG, "initializeSocket: ${e.printStackTrace()}")
+            Log.e("victimTAG", "initializeSocket: ${e.printStackTrace()}")
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-        initializeSocket()
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,13 +54,27 @@ class VictimPoliceInteraction : AppCompatActivity() {
                 attemptSend(s)
             }
         }
+        Handler().postDelayed({
+            mSocket?.apply {
+                connect()
+                if(mSocket!!.connected()){
+                    mSocket!!.on("chat_message", onNewMessage)
+                    mSocket?.connect();
+                }
+//                Log.e("Victim socket ", "onCreate: " + once("chat_message", onNewMessage))
+                Log.e("TAG", "initializeSocket: active " + mSocket?.isActive )
+                Log.e("TAG", "initializeSocket: connected " + mSocket?.connected() )
+                Log.e("victim socker", "onCreate: " + on("joinMessage", joinMessage))
+            }
+        },5000)
 
         getchat.setOnClickListener {
             mSocket?.apply {
                 Log.e(
                     "Victim socket ",
-                    "onCreate: " + on("chat_message", onNewMessage)
+                    "onCreate: " + on("chaat_message", onNewMessage)
                 )
+                Log.e("TAG", "onCreate: "+connected() + isActive )
             }
         }
         viewModel.message.observeForever {
