@@ -24,7 +24,7 @@ class VictimPoliceInteraction : AppCompatActivity() {
     lateinit var binding: ActivityVictimPoliceInteractionBinding
     lateinit var viewModel: chatViewModel
     private var mSocket: Socket? = null
-    private val roomID = 3002
+    private var roomID = "3002"
     private val phoneNumber = 9877371590
     lateinit var adapter: ChatAdapter
 
@@ -44,7 +44,11 @@ class VictimPoliceInteraction : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        if(intent.extras!=null)
+            roomID = intent.extras?.getString("roomID").toString()
+        else{
+            Toast.makeText(this, "Chat Not Connected \n Try AGAIN", Toast.LENGTH_SHORT).show()
+        }
         viewModel = ViewModelProvider(this).get(chatViewModel::class.java)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_victim_police_interaction)
         binding.chatLayout.sendBtn.setOnClickListener {

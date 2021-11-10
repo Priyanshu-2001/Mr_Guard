@@ -12,6 +12,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
@@ -55,51 +56,35 @@ class PoliceDashBoard : AppCompatActivity(), OnMapReadyCallback {
     var currentLocation: Location? = null
     lateinit var pref: SharedPreferences
     lateinit var viewModel: chatViewModel
-    private val roomID = 3002
-    private val phoneNumber = 9877371590
+    private var roomID = "3002"
+    private var victimPhoneNumber = "9877371590"
     lateinit var adapter: ChatAdapter
+    lateinit var alterDialog : AlertDialog.Builder
 
-    //    var options: IO.Options = IO.Options.builder() // IO factory options
-//        .setForceNew(false)
-//        .setMultiplex(true) // low-level engine options
-//        .setTransports(arrayOf(Polling.NAME, WebSocket.NAME))
-//        .setUpgrade(true)
-//        .setRememberUpgrade(false)
-////        .setPath("/socket.io/")
-////        .setQuery(null)
-////        .setExtraHeaders(null) // Manager options
-//        .setReconnection(true)
-//        .setReconnectionAttempts(Int.MAX_VALUE)
-//        .setReconnectionDelay(1000)
-//        .setReconnectionDelayMax(5000)
-//        .setRandomizationFactor(0.5)
-//        .setTimeout(20000) // Socket options
-//        .setAuth(null)
-//        .build()
     override fun onStart() {
         super.onStart()
         val notificationData: raiseAlert? = null
         val location: String
-//        if(notificationData!=null){
-//            location = "some Location Details"
-//            alterDialog = AlertDialog.Builder(this).apply {
-//                setTitle("Alert Raised")
-//                setMessage("Some Needs Your Help at $location")
-//                setPositiveButton("Accept") { dialog, which ->
-//                    acceptRequest(notificationData)
-//                    roomID = notificationData.roomId
-//                    dialog.dismiss()
-//                    addRouteToMap()
-//                    ConnectToVictimChat()
-//                    tryGettingVictimProfile()
-//                }
-//            }
-//        }
+        val i = intent.extras
+        if(i!=null){
+            location = "some Location Details"
+            roomID = i.getString("roomID","-4")
+            victimPhoneNumber = i.getString("victimContact","-5")
+            Log.e("TAG", "onStart: $roomID contaxt $victimPhoneNumber")
+            alterDialog = AlertDialog.Builder(this).apply {
+                setTitle("Alert Raised")
+                setMessage("Some Needs Your Help at $location")
+                setPositiveButton("Accept") { dialog, which ->
+                    acceptRequest()
+                    dialog.dismiss()
+                }
+                show()
+            }
+        }
     }
 
     private fun initializeSocket() {
         try {
-//            mSocket = IO.socket("https://police-backend-deploy.herokuapp.com/",options)
             mSocket = IO.socket("https://police-backend-deploy.herokuapp.com/")
         } catch (e: Exception) {
             Log.e(NormalUserDashBoard.TAG, "initializeSocket: ${e.printStackTrace()}")
@@ -139,15 +124,6 @@ class PoliceDashBoard : AppCompatActivity(), OnMapReadyCallback {
             }
         }
 
-    private fun tryGettingVictimProfile() {
-        TODO("Not yet implemented")
-    }
-
-    private fun addRouteToMap() {
-        TODO("Not yet implemented")
-    }
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
@@ -174,9 +150,9 @@ class PoliceDashBoard : AppCompatActivity(), OnMapReadyCallback {
             binding.drawerLayout.openDrawer(GravityCompat.START)
         }
 
-        parti.setOnClickListener {
-            acceptRequest()
-        }
+//        parti.setOnClickListener {
+////            acceptRequest()
+//        }
         binding.navLayout.setNavigationItemSelectedListener {
             when (it.title) {
                 "Log Out" -> {

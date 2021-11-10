@@ -10,30 +10,23 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
-import com.geek.mrguard.Globals
 import com.geek.mrguard.R
 import com.geek.mrguard.SocketIOClient
 import com.geek.mrguard.UI.MainActivity
-import com.geek.mrguard.data.raiseAlert
 import com.geek.mrguard.databinding.ActivityNormalUserDashBoardBinding
 import com.google.firebase.database.FirebaseDatabase
-import com.google.gson.JsonObject
-import io.socket.client.IO
 import io.socket.client.Socket
-import java.net.URISyntaxException
-import org.json.JSONException
-
-import org.json.JSONObject
-
 import io.socket.emitter.Emitter
-import java.lang.Exception
+import org.json.JSONException
+import org.json.JSONObject
 
 
 class NormalUserDashBoard : AppCompatActivity() {
     lateinit var binding: ActivityNormalUserDashBoardBinding
     private var mSocket: Socket? = null
     lateinit var pref: SharedPreferences
-    lateinit var progressDialog : ProgressDialog
+    lateinit var progressDialog: ProgressDialog
+    private lateinit var roomId: String
     private fun initializeSocket() {
         try {
 //            mSocket = IO.socket("https://police-backend-deploy.herokuapp.com/")
@@ -55,16 +48,17 @@ class NormalUserDashBoard : AppCompatActivity() {
 //                initializeSocket()
 
                 mSocket?.run {
-//                    val roomId = FirebaseDatabase.getInstance().reference.push().key // generates random roomID
-                    val roomId  = 3002
-                    val obj  = JSONObject()
-                    obj.put("roomId",roomId)
-                    obj.put("lat","30.722")
-                    obj.put("long","76.85")
-                    obj.put("phone_number","8872365433")
-                    emit("victimJoin",obj)
+                    // generates random roomID
+                    roomId = FirebaseDatabase.getInstance().reference.push().key.toString()
+                    Log.e(TAG, "onCreate: roomID send $roomId")
+                    val obj = JSONObject()
+                    obj.put("roomId", roomId)
+                    obj.put("lat", "30.722")
+                    obj.put("long", "76.85")
+                    obj.put("phone_number", "8872365433")
+                    emit("victimJoin", obj)
                 }
-                if(mSocket!!.connected()){
+                if (mSocket!!.connected()) {
                     mSocket?.on("policeManJoin", onPoliceJoined);
                     mSocket?.connect();
                 }
@@ -73,7 +67,7 @@ class NormalUserDashBoard : AppCompatActivity() {
                         setMessage("Searching For Police Man")
                         setButton("CANCEL") { dialog, _ ->
                             dialog.dismiss()
-                            mSocket?.emit("cancelSearch",{})
+                            mSocket?.emit("cancelSearch", {})
                         }
                         setCancelable(true)
                         setCanceledOnTouchOutside(false)
@@ -110,9 +104,11 @@ class NormalUserDashBoard : AppCompatActivity() {
         Emitter.Listener { args ->
             this.runOnUiThread(Runnable {
                 val data = args[0] as JSONObject
-                Log.e(TAG, "police joined = $data: ", )
+                Log.e(TAG, "police joined = $data: ")
                 progressDialog.dismiss()
-                startActivity(Intent(this,VictimPoliceInteraction::class.java))
+                val intent = Intent(this, VictimPoliceInteraction::class.java)
+                intent.putExtra("roomID", roomId)
+                startActivity(intent)
                 try {
                     val username = data.getString("username")
                     val message = data.getString("message")
