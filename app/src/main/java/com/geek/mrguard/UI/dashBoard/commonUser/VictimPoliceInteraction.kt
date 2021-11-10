@@ -68,15 +68,6 @@ class VictimPoliceInteraction : AppCompatActivity() {
             }
         },5000)
 
-        getchat.setOnClickListener {
-            mSocket?.apply {
-                Log.e(
-                    "Victim socket ",
-                    "onCreate: " + on("chaat_message", onNewMessage)
-                )
-                Log.e("TAG", "onCreate: "+connected() + isActive )
-            }
-        }
         viewModel.message.observeForever {
             adapter = ChatAdapter(this, it)
             Log.e("TAG", "onCreate: victim msg viewmodel$it")

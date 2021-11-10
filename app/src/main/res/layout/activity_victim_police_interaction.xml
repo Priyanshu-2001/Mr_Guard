@@ -15,16 +15,5 @@
             android:id="@+id/chatLayout"
             layout="@layout/chat_fragment" />
 
-        <Button
-            android:id="@+id/getchat"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:elevation="25dp"
-            android:text="getChat"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

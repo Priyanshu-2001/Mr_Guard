@@ -14,6 +14,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
+import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import com.geek.mrguard.R
@@ -168,22 +169,12 @@ class PoliceDashBoard : AppCompatActivity(), OnMapReadyCallback {
         pref = getSharedPreferences("tokenFile", MODE_PRIVATE)
         val drawer = binding.drawerIcon
         drawer.setOnClickListener {
-            Log.e("TAG", "onCreate: button clicked")
-            Toast.makeText(this, "clicked", Toast.LENGTH_SHORT).show()
-//            binding.drawerLayout.openDrawer(GravityCompat.START)
+            binding.drawerLayout.openDrawer(GravityCompat.START)
+        }
+
+        parti.setOnClickListener {
             acceptRequest()
         }
-
-
-        binding.parti.setOnClickListener {
-            val roomObj = JSONObject()
-            roomObj.put("roomId", roomID)
-            mSocket?.emit("getRoomParticipants", roomObj);
-            mSocket?.on("roomParticipants", participantListener)
-        }
-
-
-
         binding.navLayout.setNavigationItemSelectedListener {
             when (it.title) {
                 "Log Out" -> {
@@ -208,8 +199,6 @@ class PoliceDashBoard : AppCompatActivity(), OnMapReadyCallback {
 
         mSocket?.on("joinMessage", messageListener)
 
-
-
         fetchLoc()
     }
 
@@ -217,7 +206,6 @@ class PoliceDashBoard : AppCompatActivity(), OnMapReadyCallback {
         Emitter.Listener { args ->
             runOnUiThread(Runnable {
                 Toast.makeText(this, "received in police", Toast.LENGTH_SHORT).show()
-//                Toast.makeText(this, data.getString("msg"), Toast.LENGTH_SHORT).show()
                 val data = args[0] as JSONObject
                 Log.e("pulici got msg ", ": ${data.getString("msg")} ", )
                 Log.e("TAG", "msg received in pulici  ")
