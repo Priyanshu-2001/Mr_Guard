@@ -21,4 +21,12 @@
         <item name="android:statusBarColor">@color/black</item>
         <item name="android:windowSoftInputMode">adjustResize</item>
     </style>
+
+    <style name="AlertDialog" parent="ThemeOverlay.AppCompat.Dialog">
+        <item name="android:windowBackground">@drawable/btn_theme_2</item>
+        <item name="colorAccent">@color/white</item>
+        <item name="android:textAlignment" tools:ignore="NewApi">center</item>
+        <item name="android:backgroundDimEnabled">true</item>
+    </style>
+
 </resources>

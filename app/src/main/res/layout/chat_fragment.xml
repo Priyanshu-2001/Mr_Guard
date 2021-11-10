@@ -10,6 +10,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:id="@+id/chatBottomSheetLayout"
         android:background="@drawable/app_bg"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
         app:behavior_saveFlags="peekHeight"
@@ -69,7 +70,7 @@
                 android:layout_height="30dp"
                 android:layout_marginStart="1dp"
                 android:layout_marginTop="8dp"
-                android:text="Chat with Police"
+                android:text="Chat with Victim"
                 android:textColor="@color/white"
                 android:textSize="20sp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -91,13 +92,14 @@
                 app:layout_constraintVertical_bias="1.0"
                 app:stackFromEnd="true" />
 
-            <ImageView
+            <ImageButton
                 android:id="@+id/sendBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:background="@drawable/circle_green"
                 android:padding="10dp"
+                app:elevation="20dp"
                 app:layout_constraintBottom_toBottomOf="@+id/cardView"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/cardView"

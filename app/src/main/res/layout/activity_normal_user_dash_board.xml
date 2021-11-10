@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <androidx.drawerlayout.widget.DrawerLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/drawerLayout">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/app_bg"
+            tools:context=".UI.dashBoard.commonUser.NormalUserDashBoard">
+
+            <ImageButton
+                android:id="@+id/HamburgerIcon"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="start"
+                android:backgroundTint="@color/white"
+                android:elevation="10dp"
+                android:layout_marginTop="25dp"
+                android:layout_marginStart="15dp"
+                android:src="@drawable/hamburger"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <com.ebanx.swipebtn.SwipeButton
+                android:id="@+id/raiseAlert"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                app:button_background="@drawable/stroke_filled"
+                app:button_bottom_padding="20dp"
+                app:button_image_disabled="@drawable/ic_emergency"
+                app:button_image_enabled="@drawable/ic_emergency"
+                app:button_left_padding="20dp"
+                app:button_right_padding="20dp"
+                app:button_top_padding="20dp"
+                app:inner_text="SOS >>"
+                app:inner_text_background="@drawable/gradient_button"
+                app:inner_text_bottom_padding="18dp"
+                app:inner_text_color="@android:color/white"
+                app:inner_text_size="20sp"
+                app:inner_text_top_padding="18dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <com.google.android.material.navigation.NavigationView
+            android:id="@+id/nav_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            app:headerLayout="@layout/header"
+            app:elevation="10dp"
+            app:menu="@menu/drawer" />
+    </androidx.drawerlayout.widget.DrawerLayout>
+
+</layout>

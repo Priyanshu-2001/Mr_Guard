@@ -7,15 +7,12 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.app.ActivityCompat.finishAffinity
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
-import com.ebanx.swipebtn.OnStateChangeListener
 import com.geek.mrguard.R
-import com.geek.mrguard.UI.dashBorad.DashBoard
+import com.geek.mrguard.UI.dashBoard.Police.PoliceDashBoard
 import com.geek.mrguard.databinding.FragmentLoginFragBinding
-import com.geek.mrguard.viewModel.LoginViewModel
 
 class LoginFragment : Fragment() {
 
@@ -34,7 +31,7 @@ class LoginFragment : Fragment() {
 
         binding.swipeBtn.setOnStateChangeListener {
             if(it){
-                startActivity(Intent(context, DashBoard::class.java))
+                startActivity(Intent(context, PoliceDashBoard::class.java))
                (context as Activity).finishAffinity()
             }
             else{

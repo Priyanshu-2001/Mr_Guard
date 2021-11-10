@@ -9,7 +9,7 @@ class guardApplication : Application() {
     lateinit var loginRepo : LoginService
     override fun onCreate() {
         super.onCreate()
-        val service  = RetrofitHelper().getInstance().create(LoginServiceApi::class.java)
+        val service  = RetrofitHelper().getInstance().create(LoginServiceApi::class.java) //this is done so that it is just created one time when app is started
         loginRepo = LoginService(service)
     }
 

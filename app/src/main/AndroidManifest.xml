@@ -2,20 +2,36 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.geek.mrguard">
 
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
+        android:name=".guardApplication"
         android:allowBackup="true"
         android:icon="@drawable/cap"
         android:label="@string/app_name"
         android:roundIcon="@drawable/cap"
-        android:usesCleartextTraffic="true"
-    android:name=".guardApplication"
         android:supportsRtl="true"
-        android:theme="@style/Theme.MrGuard">
+        android:theme="@style/Theme.MrGuard"
+        android:usesCleartextTraffic="true">
         <activity
-            android:name=".UI.dashBorad.DashBoard"
+            android:name=".UI.dashBoard.commonUser.VictimPoliceInteraction"
+            android:exported="false" />
+
+        <service
+            android:name=".MyFirebaseInstanceIDService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
+            </intent-filter>
+        </service>
+
+        <activity
+            android:name=".UI.dashBoard.commonUser.NormalUserDashBoard"
+            android:exported="false" />
+        <activity
+            android:name=".UI.dashBoard.Police.PoliceDashBoard"
             android:exported="false" />
         <activity
             android:name=".UI.MainActivity"
@@ -26,8 +42,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <meta-data android:name="com.google.android.geo.API_KEY"
-            android:value="@string/gmapkey"/>
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/gmapkey" />
     </application>
 
 </manifest>

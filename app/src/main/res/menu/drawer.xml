@@ -2,6 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:title="Log Out"
-        android:icon="@drawable/hamburger"
+        android:id="@+id/logOut"
+        android:icon="@drawable/logout"
         />
 </menu>
