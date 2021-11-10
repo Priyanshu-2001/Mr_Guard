@@ -23,19 +23,63 @@
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:layout_gravity="start"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="25dp"
                 android:backgroundTint="@color/white"
                 android:elevation="10dp"
-                android:layout_marginTop="25dp"
-                android:layout_marginStart="15dp"
                 android:src="@drawable/hamburger"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="300dp"
+                android:layout_height="300dp"
+                android:layout_marginTop="120dp"
+                android:src="@drawable/cap"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.498"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="WE PROTECT"
+                android:letterSpacing='.5'
+                android:textStyle="bold"
+                android:textSize="20sp"
+                android:textColor="@color/white"
+                app:layout_constraintBottom_toBottomOf="@+id/imageView"
+                app:layout_constraintEnd_toEndOf="@+id/imageView"
+                app:layout_constraintHorizontal_bias="0.502"
+                app:layout_constraintStart_toStartOf="@+id/imageView"
+                app:layout_constraintTop_toTopOf="@+id/imageView"
+                app:layout_constraintVertical_bias="0.896" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
+                android:letterSpacing=".3"
+                android:text="Swipe The Button to find nearby Police Men"
+                android:textColor="#636363"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@+id/raiseAlert"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
             <com.ebanx.swipebtn.SwipeButton
                 android:id="@+id/raiseAlert"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
+                android:layout_marginBottom="64dp"
                 app:button_background="@drawable/stroke_filled"
                 app:button_bottom_padding="20dp"
                 app:button_image_disabled="@drawable/ic_emergency"
@@ -51,8 +95,7 @@
                 app:inner_text_top_padding="18dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintStart_toStartOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
