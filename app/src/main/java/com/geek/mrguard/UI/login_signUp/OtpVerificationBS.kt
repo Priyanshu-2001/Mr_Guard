@@ -6,6 +6,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.MutableLiveData
 import com.geek.mrguard.R
@@ -32,8 +33,13 @@ class OtpVerificationBS : BottomSheetDialogFragment() {
     ): View {
         _binding = FragmentOtpVerificationBSListDialogBinding.inflate(inflater, container, false)
         binding.verifyOTP.setOnClickListener {
-            model.setOTP(binding.OTP.text.toString())
-            model.login()
+            if(binding.OTP.text.toString().isNotEmpty()){
+                model.setOTP(binding.OTP.text.toString())
+                model.login()
+            }
+            else{
+                Toast.makeText(context, "Field is Empty !", Toast.LENGTH_SHORT).show()
+            }
         }
         binding.resendBtn.setOnClickListener{
             model.getOTP()
