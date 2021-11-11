@@ -6,72 +6,57 @@
     <androidx.drawerlayout.widget.DrawerLayout
         android:id="@+id/drawerLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_height="match_parent">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            tools:context=".UI.dashBoard.Police.PoliceDashBoard">
 
-            <androidx.coordinatorlayout.widget.CoordinatorLayout
+<!--            <Button-->
+<!--                android:id="@+id/parti"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginTop="150dp"-->
+<!--                android:text="accept request" />-->
+
+            <ImageButton
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginTop="40dp"
+                android:layout_marginStart="20dp"
+                android:backgroundTint="@color/white"
+                android:layout_gravity="start"
+                android:elevation="10dp"
+                android:id="@+id/drawerIcon"
+                android:src="@drawable/hamburger"
+                />
+
+
+            <fragment
+                android:id="@+id/frag_map"
+                android:name="com.google.android.gms.maps.SupportMapFragment"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginBottom="80dp"
+                app:layout_constraintBottom_toBottomOf="@id/bottomsheet"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:context=".UI.dashBoard.Police.PoliceDashBoard">
+                app:layout_constraintTop_toTopOf="parent" />
 
-                <!--            <Button-->
-                <!--                android:id="@+id/parti"-->
-                <!--                android:layout_width="match_parent"-->
-                <!--                android:layout_height="wrap_content"-->
-                <!--                android:layout_marginTop="150dp"-->
-                <!--                android:text="accept request" />-->
+            <include
+                android:id="@+id/bottomsheet"
+                layout="@layout/chat_fragment"/>
 
-                <ImageButton
-                    android:id="@+id/drawerIcon"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:layout_gravity="start"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="40dp"
-                    android:backgroundTint="@color/white"
-                    android:elevation="10dp"
-                    android:src="@drawable/hamburger" />
-
-
-                <fragment
-                    android:id="@+id/frag_map"
-                    android:name="com.google.android.gms.maps.SupportMapFragment"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="80dp"
-                    app:layout_constraintBottom_toBottomOf="@id/bottomsheet"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <include
-                    android:id="@+id/bottomsheet"
-                    layout="@layout/chat_fragment" />
-
-            </androidx.coordinatorlayout.widget.CoordinatorLayout>
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
         <com.google.android.material.navigation.NavigationView
             android:id="@+id/nav_layout"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="start"
-            app:elevation="10dp"
             app:headerLayout="@layout/header"
+            app:elevation="10dp"
             app:menu="@menu/police_drawer" />
-
     </androidx.drawerlayout.widget.DrawerLayout>
 
 </layout>

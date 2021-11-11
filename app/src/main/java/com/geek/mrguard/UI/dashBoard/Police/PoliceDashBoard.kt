@@ -22,7 +22,6 @@ import com.geek.mrguard.R
 import com.geek.mrguard.UI.MainActivity
 import com.geek.mrguard.UI.dashBoard.commonUser.NormalUserDashBoard
 import com.geek.mrguard.adapters.ChatAdapter
-import com.geek.mrguard.data.raiseAlert
 import com.geek.mrguard.databinding.ActivityDashBoardBinding
 import com.geek.mrguard.services.UpdatePolicePersonnelCoordinates
 import com.geek.mrguard.utils.PermissionCheck
@@ -39,6 +38,8 @@ import io.socket.emitter.Emitter
 import kotlinx.android.synthetic.main.activity_dash_board.*
 import kotlinx.android.synthetic.main.activity_normal_user_dash_board.*
 import kotlinx.android.synthetic.main.chat_fragment.*
+import kotlinx.android.synthetic.main.chat_fragment.view.*
+import kotlinx.android.synthetic.main.header.view.*
 import org.json.JSONException
 import org.json.JSONObject
 import java.util.*
@@ -48,101 +49,35 @@ class PoliceDashBoard : AppCompatActivity(), OnMapReadyCallback {
 
 
     private var mSocket: Socket? = null
-    lateinit var gMap: GoogleMap
+    private lateinit var gMap: GoogleMap
     lateinit var binding: ActivityDashBoardBinding
     var currentMarker: Marker? = null
-    var fusedLocationProviderClient: FusedLocationProviderClient? = null
-    var currentLocation: Location? = null
-    lateinit var pref: SharedPreferences
+    private var fusedLocationProviderClient: FusedLocationProviderClient? = null
+    private var currentLocation: Location? = null
+    private lateinit var pref: SharedPreferences
     lateinit var viewModel: chatViewModel
     private var roomID = "3002"
-    private var victimPhoneNumber = "9877371590"
+    private var victimPhoneNumber = "1234567890"
     lateinit var adapter: ChatAdapter
     lateinit var alertDialog: AlertDialog.Builder
 
     override fun onStart() {
         super.onStart()
-        val notificationData: raiseAlert? = null
-        val location: String
         val i = intent.extras
         if (i != null) {
-            location = "some Location Details"
             roomID = i.getString("roomID", "-4")
             victimPhoneNumber = i.getString("victimContact", "-5")
-            Log.e("TAG", "onStart: $roomID contaxt $victimPhoneNumber")
-//            alterDialog = AlertDialog.Builder(this).apply {
-//                setTitle("Alert Raised")
-//                setMessage("Some Needs Your Help at $location")
-//                setPositiveButton("Accept") { dialog, which ->
-//                    acceptRequest()
-//                    dialog.dismiss()
-//                }
-//                show()
-//            }
+            Log.e("TAG", "onStart: $roomID context $victimPhoneNumber")
+            alertDialog.setCancelable(false)
             alertDialog.show()
         }
     }
 
-    private fun initializeSocket() {
-        try {
-            mSocket = IO.socket("https://police-backend-deploy.herokuapp.com/")
-        } catch (e: Exception) {
-            Log.e(NormalUserDashBoard.TAG, "initializeSocket: ${e.printStackTrace()}")
-        }
-    }
-
-    private fun acceptRequest(roomID: String) {
-        mSocket?.run {
-            val obj = JSONObject()
-            val victimProfile = JSONObject()
-            val policeProfile = JSONObject()
-            victimProfile.put("phone", victimPhoneNumber)
-            policeProfile.put("phone", "9877371590")
-            obj.put("roomId", roomID)
-            obj.put("victimProfile", victimProfile)
-            obj.put("policeProfile", policeProfile)
-            Log.e("TAG", "chat_message: " + on("chat_message", onNewMessage))
-            on("joinMessage", messageListener)
-            emit("policeManJoin", obj)
-            Log.e("TAG", "isConnected" + mSocket?.connected() + mSocket?.isActive)
-        }
-    }
-
-    private val participantListener =
-        Emitter.Listener { args ->
-            this.runOnUiThread(Runnable {
-                val data = args[0] as JSONObject
-                Log.e(NormalUserDashBoard.TAG, "message participants = $data: ")
-            })
-        }
-
-    private val messageListener =
-        Emitter.Listener { args ->
-            this.runOnUiThread {
-                val data = args[0] as JSONObject
-                Log.e("POLICE DASHBOARD", "Chat JOINED = $data: ")
-            }
-        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dash_board)
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
-            window?.decorView?.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                    or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN)
-            window.statusBarColor = Color.TRANSPARENT
-        }
-        alertDialog = AlertDialog.Builder(this).apply {
-            setTitle("Alert Raised")
-            setMessage("Some Needs Your Help at location")
-            setPositiveButton("Accept") { dialog, which ->
-                acceptRequest(roomID)
-                dialog.dismiss()
-                setCancelable(false)
-                setIcon(R.drawable.cap)
-            }
-        }
         viewModel = ViewModelProvider(this).get(chatViewModel::class.java)
         viewModel.message.observeForever {
             adapter = ChatAdapter(this, it)
@@ -150,18 +85,25 @@ class PoliceDashBoard : AppCompatActivity(), OnMapReadyCallback {
             binding.bottomsheet.recyclerView.adapter = adapter
             adapter.notifyDataSetChanged()
         }
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
+            window?.decorView?.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                    or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN)
+            window.statusBarColor = Color.TRANSPARENT
+        }
+        binding.bottomsheet.chatBottomSheetLayout.visibility = View.GONE
+        binding.bottomsheet.chatBottomSheetLayout.animate().translationY((180).toFloat())
+        initializeAlertDialog()
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
         initializeSocket()
         mSocket?.connect()
         pref = getSharedPreferences("tokenFile", MODE_PRIVATE)
+        val currentphoneNumber = pref.getString("phoneNumber","Currently Unavailable")
+        binding.navLayout.getHeaderView(0).pName.text = currentphoneNumber
         val drawer = binding.drawerIcon
         drawer.setOnClickListener {
             binding.drawerLayout.openDrawer(GravityCompat.START)
         }
 
-//        parti.setOnClickListener {
-////            acceptRequest()
-//        }
         binding.navLayout.setNavigationItemSelectedListener {
             when (it.title) {
                 "Log Out" -> {
@@ -215,33 +157,45 @@ class PoliceDashBoard : AppCompatActivity(), OnMapReadyCallback {
                 }
             }
         }
-
         binding.bottomsheet.sendBtn.setOnClickListener {
             val s = binding.bottomsheet.messageBox.text
             if (s?.trim()?.length != 0) {
                 attemptSend(s)
             }
         }
-
         mSocket?.on("joinMessage", messageListener)
 
         fetchLoc()
     }
 
+    private fun initializeAlertDialog() {
+        alertDialog = AlertDialog.Builder(this).apply {
+            setTitle("Alert Raised")
+            setMessage("Some Needs Your Help at location")
+            setPositiveButton("Accept") { dialog, which ->
+                acceptRequest(roomID)
+                dialog.dismiss()
+                setCancelable(false)
+                setIcon(R.drawable.cap)
+                intent.removeExtra("roomID")
+                intent.removeExtra("victimContact")
+            }
+        }
+    }
+
     private val onNewMessage =
         Emitter.Listener { args ->
             runOnUiThread(Runnable {
-                Toast.makeText(this, "New Msg Received", Toast.LENGTH_SHORT).show()
                 val data = args[0] as JSONObject
-                Log.e("pulici got msg ", ": $data")
-                Log.e("TAG", "msg received in pulici  ")
                 val message: String
                 try {
                     message = data.getString("msg")
                     if (message.equals("Victim has left the room")) {
                         viewModel.victimLeftTheChat()
-                        Log.e("TAG", "left the room msg : $message", )
+                        Toast.makeText(this, "VICTIM LEFT THE CHAT", Toast.LENGTH_SHORT).show()
+                        Log.e("TAG", "left the room msg : $message")
                     } else {
+                        Toast.makeText(this, "New Msg Received", Toast.LENGTH_SHORT).show()
                         viewModel.addMessageToReceiverList(message)
                     }
                 } catch (e: JSONException) {
@@ -365,4 +319,48 @@ class PoliceDashBoard : AppCompatActivity(), OnMapReadyCallback {
         super.onPause()
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver)
     }
+
+    private fun acceptRequest(roomID: String) {
+        mSocket?.run {
+            val obj = JSONObject()
+            val victimProfile = JSONObject()
+            val policeProfile = JSONObject()
+            victimProfile.put("phone", victimPhoneNumber)
+            policeProfile.put("phone", "9877371590")
+            obj.put("roomId", roomID)
+            obj.put("victimProfile", victimProfile)
+            obj.put("policeProfile", policeProfile)
+            Log.e("TAG", "chat_message: " + on("chat_message", onNewMessage))
+            on("joinMessage", messageListener)
+            emit("policeManJoin", obj)
+            Log.e("TAG", "isConnected" + mSocket?.connected() + mSocket?.isActive)
+        }
+    }
+
+    private fun initializeSocket() {
+        try {
+            mSocket = IO.socket("https://police-backend-deploy.herokuapp.com/")
+        } catch (e: Exception) {
+            Log.e(NormalUserDashBoard.TAG, "initializeSocket: ${e.printStackTrace()}")
+        }
+    }
+
+    private val participantListener =
+        Emitter.Listener { args ->
+            this.runOnUiThread(Runnable {
+                val data = args[0] as JSONObject
+                Log.e(NormalUserDashBoard.TAG, "message participants = $data: ")
+            })
+        }
+
+    private val messageListener =
+        Emitter.Listener { args ->
+            this.runOnUiThread {
+                val data = args[0] as JSONObject
+                Log.e("POLICE DASHBOARD", "Chat JOINED = $data: ")
+                binding.bottomsheet.chatBottomSheetLayout.visibility = View.VISIBLE
+                binding.bottomsheet.chatBottomSheetLayout.animate().translationY((0).toFloat())
+                binding.bottomsheet.header.text = "Chat with Victim\n($victimPhoneNumber)"
+            }
+        }
 }

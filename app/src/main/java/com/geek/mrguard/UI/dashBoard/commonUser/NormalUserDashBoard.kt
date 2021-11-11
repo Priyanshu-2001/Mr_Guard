@@ -17,6 +17,7 @@ import com.geek.mrguard.databinding.ActivityNormalUserDashBoardBinding
 import com.google.firebase.database.FirebaseDatabase
 import io.socket.client.Socket
 import io.socket.emitter.Emitter
+import kotlinx.android.synthetic.main.header.view.*
 import org.json.JSONException
 import org.json.JSONObject
 
@@ -41,6 +42,8 @@ class NormalUserDashBoard : AppCompatActivity() {
         AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_NO)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_normal_user_dash_board)
         pref = getSharedPreferences("tokenFile", MODE_PRIVATE)
+        val currentphoneNumber = pref.getString("phoneNumber","Currently Unavailable")
+        binding.navLayout.getHeaderView(0).pName.text = currentphoneNumber
         initializeSocket()
         mSocket?.connect()
         binding.raiseAlert.setOnStateChangeListener {
@@ -59,8 +62,8 @@ class NormalUserDashBoard : AppCompatActivity() {
                     emit("victimJoin", obj)
                 }
                 if (mSocket!!.connected()) {
-                    mSocket?.on("policeManJoin", onPoliceJoined);
-                    mSocket?.connect();
+                    mSocket?.on("policeManJoin", onPoliceJoined)
+                    mSocket?.connect()
                 }
                 progressDialog = ProgressDialog(this, R.style.AlertDialog)
                     .apply {
