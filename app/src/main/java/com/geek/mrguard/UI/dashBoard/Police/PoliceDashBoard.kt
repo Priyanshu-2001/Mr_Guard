@@ -1,5 +1,7 @@
 package com.geek.mrguard.UI.dashBoard.Police
 
+import android.Manifest
+import android.annotation.SuppressLint
 import android.content.*
 import android.content.pm.PackageManager
 import android.graphics.Color
@@ -24,9 +26,11 @@ import com.geek.mrguard.UI.dashBoard.commonUser.NormalUserDashBoard
 import com.geek.mrguard.adapters.ChatAdapter
 import com.geek.mrguard.databinding.ActivityDashBoardBinding
 import com.geek.mrguard.services.UpdatePolicePersonnelCoordinates
+import com.geek.mrguard.services.getUserLocation
 import com.geek.mrguard.utils.PermissionCheck
 import com.geek.mrguard.viewModel.chatViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
@@ -47,7 +51,6 @@ import java.util.*
 
 class PoliceDashBoard : AppCompatActivity(), OnMapReadyCallback {
 
-
     private var mSocket: Socket? = null
     private lateinit var gMap: GoogleMap
     lateinit var binding: ActivityDashBoardBinding
@@ -60,6 +63,8 @@ class PoliceDashBoard : AppCompatActivity(), OnMapReadyCallback {
     private var victimPhoneNumber = "1234567890"
     lateinit var adapter: ChatAdapter
     lateinit var alertDialog: AlertDialog.Builder
+    lateinit var locationRequest: LocationRequest
+    lateinit var getuserLocation: getUserLocation
 
     override fun onStart() {
         super.onStart()
@@ -92,18 +97,25 @@ class PoliceDashBoard : AppCompatActivity(), OnMapReadyCallback {
         }
         binding.bottomsheet.chatBottomSheetLayout.visibility = View.GONE
         binding.bottomsheet.chatBottomSheetLayout.animate().translationY((180).toFloat())
+        val mapFragment = supportFragmentManager
+            .findFragmentById(R.id.frag_map) as SupportMapFragment
+        mapFragment.getMapAsync(this)
         initializeAlertDialog()
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+        initializeLocationVariables()
         initializeSocket()
         mSocket?.connect()
         pref = getSharedPreferences("tokenFile", MODE_PRIVATE)
-        val currentphoneNumber = pref.getString("phoneNumber","Currently Unavailable")
-        binding.navLayout.getHeaderView(0).pName.text = currentphoneNumber
+        val currentPhoneNumber = pref.getString("phoneNumber", "Currently Unavailable")
+        binding.navLayout.getHeaderView(0).pName.text = currentPhoneNumber
         val drawer = binding.drawerIcon
         drawer.setOnClickListener {
             binding.drawerLayout.openDrawer(GravityCompat.START)
         }
-
+        getuserLocation = getUserLocation(applicationContext)
+        getuserLocation.checkSettingsAndStartLocationUpdates(
+            locationRequest,
+            fusedLocationProviderClient!!
+        )
         binding.navLayout.setNavigationItemSelectedListener {
             when (it.title) {
                 "Log Out" -> {
@@ -113,42 +125,7 @@ class PoliceDashBoard : AppCompatActivity(), OnMapReadyCallback {
                     true
                 }
                 "Current Location" -> {
-                    if (ActivityCompat.checkSelfPermission(
-                            this,
-                            android.Manifest.permission.ACCESS_FINE_LOCATION
-                        )
-                        == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                            this,
-                            android.Manifest.permission.ACCESS_COARSE_LOCATION
-                        )
-                        == PackageManager.PERMISSION_GRANTED
-                    ) {
-                        binding.drawerLayout.close()
-                        Toast.makeText(
-                            this,
-                            "Hold on !! \n we fetching your current coordinates",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        if (currentLocation == null) {
-                            val task = fusedLocationProviderClient?.lastLocation
-                            task?.addOnCompleteListener { loc ->
-                                if (loc.isSuccessful) {
-                                    val latlong = LatLng(loc.result.latitude, loc.result.longitude)
-                                    UpdatePolicePersonnelCoordinates().updateCoordinate(
-                                        latlong,
-                                        this
-                                    )
-                                }
-                            }
-                        } else {
-                            val latlong =
-                                LatLng(currentLocation?.latitude!!, currentLocation?.longitude!!)
-                            UpdatePolicePersonnelCoordinates().updateCoordinate(latlong, this)
-                        }
-
-                    } else {
-                        PermissionCheck().requestPermissions(this)
-                    }
+                    updateCoordinate()
                     true
                 }
                 else -> {
@@ -163,9 +140,43 @@ class PoliceDashBoard : AppCompatActivity(), OnMapReadyCallback {
                 attemptSend(s)
             }
         }
-        mSocket?.on("joinMessage", messageListener)
+        mSocket?.on("joinMessage", onPoliceJoinRoom)
 
         fetchLoc()
+    }
+
+    private fun initializeLocationVariables() {
+        locationRequest = LocationRequest.create()
+        locationRequest.numUpdates = 1
+        locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+    }
+
+    private fun updateCoordinate() {
+        if (checkPermissionsAvailablity(this)) {
+            binding.drawerLayout.close()
+            Toast.makeText(
+                this,
+                "Hold on !! \n we fetching your current coordinates",
+                Toast.LENGTH_SHORT
+            ).show()
+            if (currentLocation == null) {
+                getuserLocation.userLoc.observe(this, { loc ->
+                    val latlong = LatLng(loc.latitude, loc.longitude)
+                    UpdatePolicePersonnelCoordinates().updateCoordinate(
+                        latlong,
+                        this
+                    )
+                })
+            } else {
+                val latlng =
+                    LatLng(currentLocation?.latitude!!, currentLocation?.longitude!!)
+                UpdatePolicePersonnelCoordinates().updateCoordinate(latlng, this)
+            }
+
+        } else {
+            PermissionCheck().requestPermissions(this)
+        }
     }
 
     private fun initializeAlertDialog() {
@@ -216,53 +227,45 @@ class PoliceDashBoard : AppCompatActivity(), OnMapReadyCallback {
     }
 
 
+    @SuppressLint("MissingPermission")
     private fun fetchLoc() {
-        if (ActivityCompat.checkSelfPermission(
-                this,
-                android.Manifest.permission.ACCESS_FINE_LOCATION
-            )
-            != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                this,
-                android.Manifest.permission.ACCESS_COARSE_LOCATION
-            )
-            != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), 1000
-            )
+        if (!checkPermissionsAvailablity(this)) {
+            PermissionCheck().requestPermissions(this)
             return
         }
-        val task = fusedLocationProviderClient?.lastLocation
-        task?.addOnSuccessListener { location ->
+        getuserLocation.userLoc.observe(this, { location ->
             if (location != null) {
                 this.currentLocation = location
-//                val mapFragment = supportFragmentManager.findFragmentById(
-//                    R.id.frag_map
-//                ) as SupportMapFragment
-//                mapFragment.getMapAsync(this)
             }
-        }
+        })
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        when (requestCode) {
-            1000 -> if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)
-                fetchLoc()
-        }
-    }
+//    override fun onRequestPermissionsResult(
+//        requestCode: Int,
+//        permissions: Array<out String>,
+//        grantResults: IntArray
+//    ) {
+//        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+//        when (requestCode) {
+//            1000 -> if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+//                fetchLoc()
+//        }
+//    }
 
+    @SuppressLint("MissingPermission")
     override fun onMapReady(googleMap: GoogleMap) {
         gMap = googleMap
-
-        val latlong = LatLng(currentLocation?.latitude!!, currentLocation?.longitude!!)
-        drawMarker(latlong)
-
+        if (currentLocation == null)
+            getuserLocation.checkSettingsAndStartLocationUpdates(
+                locationRequest,
+                fusedLocationProviderClient!!
+            )
+        getuserLocation.userLoc.observe(this, {
+            val latlong = LatLng(currentLocation?.latitude!!, currentLocation?.longitude!!)
+            Log.e("TAG", "onMapReady: $latlong")
+            drawMarker(latlong)
+        })
+        googleMap.isMyLocationEnabled = true
         gMap.setOnMarkerDragListener(object : GoogleMap.OnMarkerDragListener {
             override fun onMarkerDrag(p0: Marker) {
 
@@ -331,7 +334,8 @@ class PoliceDashBoard : AppCompatActivity(), OnMapReadyCallback {
             obj.put("victimProfile", victimProfile)
             obj.put("policeProfile", policeProfile)
             Log.e("TAG", "chat_message: " + on("chat_message", onNewMessage))
-            on("joinMessage", messageListener)
+            on("joinMessage", onPoliceJoinRoom)
+            on("victimNewCoordinates", onReceivingCoordinates)
             emit("policeManJoin", obj)
             Log.e("TAG", "isConnected" + mSocket?.connected() + mSocket?.isActive)
         }
@@ -353,7 +357,7 @@ class PoliceDashBoard : AppCompatActivity(), OnMapReadyCallback {
             })
         }
 
-    private val messageListener =
+    private val onPoliceJoinRoom =
         Emitter.Listener { args ->
             this.runOnUiThread {
                 val data = args[0] as JSONObject
@@ -363,4 +367,25 @@ class PoliceDashBoard : AppCompatActivity(), OnMapReadyCallback {
                 binding.bottomsheet.header.text = "Chat with Victim\n($victimPhoneNumber)"
             }
         }
+    private val onReceivingCoordinates =
+        Emitter.Listener { args ->
+            this.runOnUiThread {
+                val data = args[0] as JSONObject
+                Log.e("TAG", "coordinates =>> $data: ")
+            }
+        }
+
+    companion object {
+        fun checkPermissionsAvailablity(context: Context): Boolean {
+            return (ActivityCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            )
+                    == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            )
+                    == PackageManager.PERMISSION_GRANTED)
+        }
+    }
 }
