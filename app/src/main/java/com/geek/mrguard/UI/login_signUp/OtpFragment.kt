@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModel
@@ -36,8 +37,14 @@ class OtpFragment : Fragment() {
             val phoneNumber = binding.phoneNumber.text.toString()
             model.phoneNumber.value = phoneNumber
             Log.e("TAG", "onCreateView: $phoneNumber")
-            model.getOTP()
-            OtpVerificationBS().show(parentFragmentManager,"verify")
+            if(phoneNumber.isNotEmpty() && phoneNumber.length==10){
+                model.getOTP()
+                OtpVerificationBS().show(parentFragmentManager,"verify")
+            }
+            else{
+                Toast.makeText(context, "Invalid Credentials !!", Toast.LENGTH_SHORT).show()
+            }
+
         }
         return binding.root
     }
