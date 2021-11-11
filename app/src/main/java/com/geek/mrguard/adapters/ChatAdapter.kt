@@ -20,18 +20,14 @@ class ChatAdapter(
     RecyclerView.Adapter<ChatAdapter.ChatViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChatViewHolder {
-        val view: View
         Log.e("TAG", "onCreateViewHolder: $viewType", )
-        if (viewType == ITEM_EXIT) {
-            view =
-                LayoutInflater.from(context).inflate(R.layout.item_chat_left, parent, false)
+        var view: View = if (viewType == ITEM_EXIT) {
+            LayoutInflater.from(context).inflate(R.layout.item_chat_left, parent, false)
         } else {
             if (viewType == ITEM_SENT) {
-                view =
-                    LayoutInflater.from(context).inflate(R.layout.item_sent, parent, false)
+                LayoutInflater.from(context).inflate(R.layout.item_sent, parent, false)
             } else {
-                view =
-                    LayoutInflater.from(context).inflate(R.layout.item_receive, parent, false)
+                LayoutInflater.from(context).inflate(R.layout.item_receive, parent, false)
 
             }
         }
@@ -67,7 +63,6 @@ class ChatAdapter(
         } else {
             if (!message.isReceived) {
                 ITEM_SENT
-                Log.e("TAG", "getItemViewType: ITEM_EXIT")
             } else {
                 ITEM_RECEIVE
             }
