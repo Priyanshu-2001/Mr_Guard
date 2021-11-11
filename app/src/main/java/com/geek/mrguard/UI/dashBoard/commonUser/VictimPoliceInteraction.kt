@@ -12,7 +12,6 @@ import com.geek.mrguard.SocketIOClient
 import com.geek.mrguard.adapters.ChatAdapter
 import com.geek.mrguard.databinding.ActivityVictimPoliceInteractionBinding
 import com.geek.mrguard.viewModel.chatViewModel
-import io.socket.client.IO
 import io.socket.client.Socket
 import io.socket.emitter.Emitter
 import kotlinx.android.synthetic.main.activity_victim_police_interaction.*
@@ -29,7 +28,7 @@ class VictimPoliceInteraction : AppCompatActivity() {
     lateinit var adapter: ChatAdapter
 
 
-    init{
+    init {
         try {
             mSocket = SocketIOClient.getInstance(this)
             mSocket?.connect()
@@ -44,9 +43,9 @@ class VictimPoliceInteraction : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if(intent.extras!=null)
+        if (intent.extras != null)
             roomID = intent.extras?.getString("roomID").toString()
-        else{
+        else {
             Toast.makeText(this, "Chat Not Connected \n Try AGAIN", Toast.LENGTH_SHORT).show()
         }
         viewModel = ViewModelProvider(this).get(chatViewModel::class.java)
@@ -61,16 +60,16 @@ class VictimPoliceInteraction : AppCompatActivity() {
         Handler().postDelayed({
             mSocket?.apply {
                 connect()
-                if(mSocket!!.connected()){
+                if (mSocket!!.connected()) {
                     mSocket!!.on("chat_message", onNewMessage)
                     mSocket?.connect();
                 }
 //                Log.e("Victim socket ", "onCreate: " + once("chat_message", onNewMessage))
-                Log.e("TAG", "initializeSocket: active " + mSocket?.isActive )
-                Log.e("TAG", "initializeSocket: connected " + mSocket?.connected() )
+                Log.e("TAG", "initializeSocket: active " + mSocket?.isActive)
+                Log.e("TAG", "initializeSocket: connected " + mSocket?.connected())
                 Log.e("victim socker", "onCreate: " + on("joinMessage", joinMessage))
             }
-        },5000)
+        }, 5000)
 
         viewModel.message.observeForever {
             adapter = ChatAdapter(this, it)
@@ -99,7 +98,12 @@ class VictimPoliceInteraction : AppCompatActivity() {
                 val message: String
                 try {
                     message = data.getString("msg")
-                    viewModel.addMessageToReceiverList(message)
+                    if (message.equals("Policeman has left the room")) {
+                        viewModel.policeLeftTheChat()
+                        Log.e("TAG", "left the room msg : $message")
+                    } else {
+                        viewModel.addMessageToReceiverList(message)
+                    }
                 } catch (e: JSONException) {
                     return@Runnable
                 }

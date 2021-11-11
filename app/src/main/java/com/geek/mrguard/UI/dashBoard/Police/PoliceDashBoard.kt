@@ -1,8 +1,6 @@
 package com.geek.mrguard.UI.dashBoard.Police
 
-import android.Manifest
-import android.content.Intent
-import android.content.SharedPreferences
+import android.content.*
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.location.Geocoder
@@ -19,6 +17,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.geek.mrguard.R
 import com.geek.mrguard.UI.MainActivity
 import com.geek.mrguard.UI.dashBoard.commonUser.NormalUserDashBoard
@@ -59,27 +58,28 @@ class PoliceDashBoard : AppCompatActivity(), OnMapReadyCallback {
     private var roomID = "3002"
     private var victimPhoneNumber = "9877371590"
     lateinit var adapter: ChatAdapter
-    lateinit var alterDialog : AlertDialog.Builder
+    lateinit var alertDialog: AlertDialog.Builder
 
     override fun onStart() {
         super.onStart()
         val notificationData: raiseAlert? = null
         val location: String
         val i = intent.extras
-        if(i!=null){
+        if (i != null) {
             location = "some Location Details"
-            roomID = i.getString("roomID","-4")
-            victimPhoneNumber = i.getString("victimContact","-5")
+            roomID = i.getString("roomID", "-4")
+            victimPhoneNumber = i.getString("victimContact", "-5")
             Log.e("TAG", "onStart: $roomID contaxt $victimPhoneNumber")
-            alterDialog = AlertDialog.Builder(this).apply {
-                setTitle("Alert Raised")
-                setMessage("Some Needs Your Help at $location")
-                setPositiveButton("Accept") { dialog, which ->
-                    acceptRequest()
-                    dialog.dismiss()
-                }
-                show()
-            }
+//            alterDialog = AlertDialog.Builder(this).apply {
+//                setTitle("Alert Raised")
+//                setMessage("Some Needs Your Help at $location")
+//                setPositiveButton("Accept") { dialog, which ->
+//                    acceptRequest()
+//                    dialog.dismiss()
+//                }
+//                show()
+//            }
+            alertDialog.show()
         }
     }
 
@@ -91,12 +91,12 @@ class PoliceDashBoard : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
-    private fun acceptRequest() {
+    private fun acceptRequest(roomID: String) {
         mSocket?.run {
             val obj = JSONObject()
             val victimProfile = JSONObject()
             val policeProfile = JSONObject()
-            victimProfile.put("phone", "9877371590")
+            victimProfile.put("phone", victimPhoneNumber)
             policeProfile.put("phone", "9877371590")
             obj.put("roomId", roomID)
             obj.put("victimProfile", victimProfile)
@@ -133,7 +133,16 @@ class PoliceDashBoard : AppCompatActivity(), OnMapReadyCallback {
                     or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN)
             window.statusBarColor = Color.TRANSPARENT
         }
-
+        alertDialog = AlertDialog.Builder(this).apply {
+            setTitle("Alert Raised")
+            setMessage("Some Needs Your Help at location")
+            setPositiveButton("Accept") { dialog, which ->
+                acceptRequest(roomID)
+                dialog.dismiss()
+                setCancelable(false)
+                setIcon(R.drawable.cap)
+            }
+        }
         viewModel = ViewModelProvider(this).get(chatViewModel::class.java)
         viewModel.message.observeForever {
             adapter = ChatAdapter(this, it)
@@ -222,14 +231,19 @@ class PoliceDashBoard : AppCompatActivity(), OnMapReadyCallback {
     private val onNewMessage =
         Emitter.Listener { args ->
             runOnUiThread(Runnable {
-                Toast.makeText(this, "received in police", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "New Msg Received", Toast.LENGTH_SHORT).show()
                 val data = args[0] as JSONObject
-                Log.e("pulici got msg ", ": ${data.getString("msg")} ")
+                Log.e("pulici got msg ", ": $data")
                 Log.e("TAG", "msg received in pulici  ")
                 val message: String
                 try {
                     message = data.getString("msg")
-                    viewModel.addMessageToReceiverList(message)
+                    if (message.equals("Victim has left the room")) {
+                        viewModel.victimLeftTheChat()
+                        Log.e("TAG", "left the room msg : $message", )
+                    } else {
+                        viewModel.addMessageToReceiverList(message)
+                    }
                 } catch (e: JSONException) {
                     return@Runnable
                 }
@@ -330,4 +344,25 @@ class PoliceDashBoard : AppCompatActivity(), OnMapReadyCallback {
         return addresses[0].getAddressLine(0).toString()
     }
 
+    private val mMessageReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent) {
+            val msgBody = intent.getStringExtra("body")
+            roomID = intent.getStringExtra("roomID").toString()
+            victimPhoneNumber = intent.getStringExtra("victimPhoneNumber").toString()
+            alertDialog.show()
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        LocalBroadcastManager.getInstance(this).registerReceiver(
+            mMessageReceiver,
+            IntentFilter("myFunction")
+        )
+    }
+
+    override fun onPause() {
+        super.onPause()
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver)
+    }
 }
