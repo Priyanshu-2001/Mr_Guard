@@ -1,18 +1,16 @@
 package com.geek.mrguard.UI
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import com.geek.mrguard.R
 import com.geek.mrguard.UI.dashBoard.Police.PoliceDashBoard
 import com.geek.mrguard.UI.dashBoard.commonUser.NormalUserDashBoard
 import com.google.firebase.FirebaseApp
-import org.json.JSONObject
-import java.lang.Exception
 
 class MainActivity : AppCompatActivity() {
-    val bundle = Bundle()
+    private val bundle = Bundle()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         FirebaseApp.initializeApp(this)

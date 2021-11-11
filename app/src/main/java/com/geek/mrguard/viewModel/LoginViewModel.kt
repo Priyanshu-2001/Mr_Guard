@@ -86,6 +86,7 @@ class LoginViewModel(val service: LoginService, var context123: Context?) : View
         context123?.apply {
             val edit = this.getSharedPreferences("tokenFile", MODE_PRIVATE)?.edit()
             edit?.putString("token", signInResponse.token)
+            edit?.putString("phoneNumber",signInResponse.user.phone)
             if (signInResponse.user.user_type == "normal_user") {
                 edit?.putBoolean("isPolice", false)
                 intent = Intent(context123, NormalUserDashBoard::class.java)

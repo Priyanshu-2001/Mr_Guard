@@ -57,12 +57,13 @@ class VictimPoliceInteraction : AppCompatActivity() {
                 attemptSend(s)
             }
         }
+        binding.chatLayout.header.text = "Chat with Police"
         Handler().postDelayed({
             mSocket?.apply {
                 connect()
                 if (mSocket!!.connected()) {
                     mSocket!!.on("chat_message", onNewMessage)
-                    mSocket?.connect();
+                    mSocket?.connect()
                 }
 //                Log.e("Victim socket ", "onCreate: " + once("chat_message", onNewMessage))
                 Log.e("TAG", "initializeSocket: active " + mSocket?.isActive)
@@ -91,7 +92,6 @@ class VictimPoliceInteraction : AppCompatActivity() {
     private val onNewMessage =
         Emitter.Listener { args ->
             runOnUiThread(Runnable {
-                Toast.makeText(this, "received in vicitm", Toast.LENGTH_SHORT).show()
                 val data = args[0] as JSONObject
                 Log.e("victim got msg ", ": ${data.getString("msg")} ")
                 Log.e("TAG", "msg received in victim  $data")
@@ -102,6 +102,7 @@ class VictimPoliceInteraction : AppCompatActivity() {
                         viewModel.policeLeftTheChat()
                         Log.e("TAG", "left the room msg : $message")
                     } else {
+                        Toast.makeText(this, "NEW MESSAGE RECEIVED", Toast.LENGTH_SHORT).show()
                         viewModel.addMessageToReceiverList(message)
                     }
                 } catch (e: JSONException) {
