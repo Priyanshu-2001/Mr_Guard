@@ -93,7 +93,7 @@ class VictimPoliceInteraction : AppCompatActivity() {
     }
 
     private fun startEmittingCurrentLocation() {
-        getuserLocation = getUserLocation(applicationContext)
+        getuserLocation = getUserLocation(this)
         getuserLocation.checkSettingsAndStartLocationUpdates(
             locationRequest,
             fusedLocationProviderClient!!
@@ -106,7 +106,7 @@ class VictimPoliceInteraction : AppCompatActivity() {
             locObj.put("lon", location.longitude)
             obj.put("newCord",locObj)
             Log.e("TAG", "startEmittingCurrentLocation: $obj", )
-            mSocket?.emit("updateCurrentVictimCoordinates", obj)
+            mSocket?.emit("victimNewCoordinates", obj)
         }
 
     }

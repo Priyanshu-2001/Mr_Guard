@@ -5,12 +5,17 @@ import android.annotation.SuppressLint
 import android.content.*
 import android.content.pm.PackageManager
 import android.graphics.Color
+import android.graphics.Point
 import android.location.Geocoder
 import android.location.Location
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.SystemClock
 import android.util.Log
 import android.view.View
+import android.view.animation.Interpolator
+import android.view.animation.LinearInterpolator
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -65,10 +70,14 @@ class PoliceDashBoard : AppCompatActivity(), OnMapReadyCallback {
     lateinit var alertDialog: AlertDialog.Builder
     lateinit var locationRequest: LocationRequest
     lateinit var getuserLocation: getUserLocation
+    lateinit var previousLatLng : LatLng
 
     override fun onStart() {
         super.onStart()
         val i = intent.extras
+        if(!checkPermissionsAvailablity(this)){
+            PermissionCheck().requestPermissions(this)
+        }
         if (i != null) {
             roomID = i.getString("roomID", "-4")
             victimPhoneNumber = i.getString("victimContact", "-5")
@@ -111,7 +120,7 @@ class PoliceDashBoard : AppCompatActivity(), OnMapReadyCallback {
         drawer.setOnClickListener {
             binding.drawerLayout.openDrawer(GravityCompat.START)
         }
-        getuserLocation = getUserLocation(applicationContext)
+        getuserLocation = getUserLocation(this)
         getuserLocation.checkSettingsAndStartLocationUpdates(
             locationRequest,
             fusedLocationProviderClient!!
@@ -240,50 +249,49 @@ class PoliceDashBoard : AppCompatActivity(), OnMapReadyCallback {
         })
     }
 
-//    override fun onRequestPermissionsResult(
-//        requestCode: Int,
-//        permissions: Array<out String>,
-//        grantResults: IntArray
-//    ) {
-//        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 //        when (requestCode) {
 //            1000 -> if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)
 //                fetchLoc()
 //        }
-//    }
-
-    @SuppressLint("MissingPermission")
-    override fun onMapReady(googleMap: GoogleMap) {
-        gMap = googleMap
-        if (currentLocation == null)
+        if(grantResults[0]==PackageManager.PERMISSION_GRANTED){
             getuserLocation.checkSettingsAndStartLocationUpdates(
                 locationRequest,
                 fusedLocationProviderClient!!
             )
-        getuserLocation.userLoc.observe(this, {
-            val latlong = LatLng(currentLocation?.latitude!!, currentLocation?.longitude!!)
-            Log.e("TAG", "onMapReady: $latlong")
-            drawMarker(latlong)
-        })
-        googleMap.isMyLocationEnabled = true
-        gMap.setOnMarkerDragListener(object : GoogleMap.OnMarkerDragListener {
-            override fun onMarkerDrag(p0: Marker) {
 
-            }
+            getuserLocation.userLoc.observe(this, {
+                val latlong = LatLng(currentLocation?.latitude!!, currentLocation?.longitude!!)
+                Log.e("TAG", "onMapReady: $latlong")
+//                drawMarker(latlong)
+            })
+        }
+    }
+//    4WiFTo
+    @SuppressLint("MissingPermission")
+    override fun onMapReady(googleMap: GoogleMap) {
+        gMap = googleMap
+        if (checkPermissionsAvailablity(this)) {
+            if (currentLocation == null)
+                getuserLocation.checkSettingsAndStartLocationUpdates(
+                    locationRequest,
+                    fusedLocationProviderClient!!
+                )
 
-            override fun onMarkerDragEnd(p0: Marker) {
-                if (currentMarker != null)
-                    currentMarker?.remove()
+            getuserLocation.userLoc.observe(this, {
+                val latlong = LatLng(currentLocation?.latitude!!, currentLocation?.longitude!!)
+                Log.e("TAG", "onMapReady: $latlong")
+//                drawMarker(latlong)
+            })
 
-                val newLatLng = LatLng(p0.position.latitude, p0.position.longitude)
-                drawMarker(newLatLng)
-            }
-
-            override fun onMarkerDragStart(p0: Marker) {
-
-            }
-        })
-
+            googleMap.isMyLocationEnabled = true
+        } else
+            PermissionCheck().requestPermissions(this)
     }
 
     private fun drawMarker(latLong: LatLng) {
@@ -371,7 +379,14 @@ class PoliceDashBoard : AppCompatActivity(), OnMapReadyCallback {
         Emitter.Listener { args ->
             this.runOnUiThread {
                 val data = args[0] as JSONObject
-                Log.e("TAG", "coordinates =>> $data: ")
+                Log.e("TAG", "coordinates =>> ${data.get("updatedCord")}: ")
+                val locObj : JSONObject = data.get("updatedCord") as JSONObject
+                val latlng = LatLng(locObj.get("lat") as Double, locObj.get("lon") as Double)
+//                if(previousLatLng==null){
+//                    previousLatLng = latlng
+//                }
+                currentMarker?.let { animateMarker(it,latlng,true) }
+                drawMarker(latlng)
             }
         }
 
@@ -387,5 +402,36 @@ class PoliceDashBoard : AppCompatActivity(), OnMapReadyCallback {
             )
                     == PackageManager.PERMISSION_GRANTED)
         }
+    }
+
+    fun animateMarker(
+        marker: Marker, toPosition: LatLng,
+        hideMarker: Boolean
+    ) {
+        val handler = Handler()
+        val start: Long = SystemClock.uptimeMillis()
+        val proj: Projection = gMap.projection
+        val startPoint: Point = proj.toScreenLocation(marker.position)
+        val startLatLng = proj.fromScreenLocation(startPoint)
+        val duration: Long = 500
+        val interpolator: Interpolator = LinearInterpolator()
+        handler.post(object : Runnable {
+            override fun run() {
+                val elapsed: Long = SystemClock.uptimeMillis() - start
+                val t: Float = interpolator.getInterpolation(
+                    elapsed.toFloat()
+                            / duration
+                )
+                val lng = t * toPosition.longitude + (1 - t) * startLatLng.longitude
+                val lat = t * toPosition.latitude + (1 - t)* startLatLng.latitude
+                marker.position = LatLng(lat, lng)
+                if (t < 1.0) {
+                    // Post again 16ms later.
+                    handler.postDelayed(this, 16)
+                } else {
+                    marker.isVisible = !hideMarker
+                }
+            }
+        })
     }
 }
