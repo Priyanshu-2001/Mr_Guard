@@ -64,7 +64,7 @@
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="16dp"
                 android:letterSpacing=".1"
-                android:text="Swipe The Button to find nearby \n COP"
+                android:text="Swipe The Button to find \n nearby COP"
                 android:textColor="#636363"
                 android:textSize="20sp"
                 android:textStyle="bold"
