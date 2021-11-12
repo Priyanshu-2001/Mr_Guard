@@ -11,7 +11,11 @@ import com.geek.mrguard.R
 import com.geek.mrguard.SocketIOClient
 import com.geek.mrguard.adapters.ChatAdapter
 import com.geek.mrguard.databinding.ActivityVictimPoliceInteractionBinding
+import com.geek.mrguard.services.getUserLocation
 import com.geek.mrguard.viewModel.chatViewModel
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationServices
 import io.socket.client.Socket
 import io.socket.emitter.Emitter
 import kotlinx.android.synthetic.main.activity_victim_police_interaction.*
@@ -24,9 +28,10 @@ class VictimPoliceInteraction : AppCompatActivity() {
     lateinit var viewModel: chatViewModel
     private var mSocket: Socket? = null
     private var roomID = "3002"
-    private val phoneNumber = 9877371590
     lateinit var adapter: ChatAdapter
-
+    lateinit var getuserLocation: getUserLocation
+    lateinit var locationRequest: LocationRequest
+    private var fusedLocationProviderClient: FusedLocationProviderClient? = null
 
     init {
         try {
@@ -71,13 +76,39 @@ class VictimPoliceInteraction : AppCompatActivity() {
                 Log.e("victim socker", "onCreate: " + on("joinMessage", joinMessage))
             }
         }, 5000)
+        locationRequest = LocationRequest.create()
+        locationRequest.interval = 6000
+        locationRequest.fastestInterval = 2000
+        locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+        fusedLocationProviderClient =
+            LocationServices.getFusedLocationProviderClient(this)
 
+        startEmittingCurrentLocation()
         viewModel.message.observeForever {
             adapter = ChatAdapter(this, it)
             Log.e("TAG", "onCreate: victim msg viewmodel$it")
             binding.chatLayout.recyclerView.adapter = adapter
             adapter.notifyDataSetChanged()
         }
+    }
+
+    private fun startEmittingCurrentLocation() {
+        getuserLocation = getUserLocation(applicationContext)
+        getuserLocation.checkSettingsAndStartLocationUpdates(
+            locationRequest,
+            fusedLocationProviderClient!!
+        )
+        getuserLocation.userLoc.observeForever { location ->
+            val obj = JSONObject()
+            val locObj = JSONObject()
+            obj.put("roomId", roomID)
+            locObj.put("lat", location.latitude)
+            locObj.put("lon", location.longitude)
+            obj.put("newCord",locObj)
+            Log.e("TAG", "startEmittingCurrentLocation: $obj", )
+            mSocket?.emit("updateCurrentVictimCoordinates", obj)
+        }
+
     }
 
     private val joinMessage =
