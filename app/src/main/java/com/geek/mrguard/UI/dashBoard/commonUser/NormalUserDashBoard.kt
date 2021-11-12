@@ -88,6 +88,11 @@ class NormalUserDashBoard : AppCompatActivity() {
                     startActivity(Intent(this, MainActivity::class.java))
                     true
                 }
+                "History"->{
+                    openDashboard()
+                    binding.drawerLayout.close()
+                    true
+                }
                 else -> {
                     print("Nothing to show")
                     false
@@ -98,7 +103,9 @@ class NormalUserDashBoard : AppCompatActivity() {
             binding.drawerLayout.openDrawer(GravityCompat.START)
         }
     }
-
+    private fun openDashboard(){
+        startActivity(Intent(this,AnalyticsDashboard::class.java))
+    }
     companion object {
         const val TAG = "Normal User DashBoard"
     }
