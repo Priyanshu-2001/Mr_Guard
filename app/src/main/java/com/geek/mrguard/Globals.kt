@@ -7,5 +7,6 @@ class Globals {
         const val Endpoint = "https://police-backend-deploy.herokuapp.com/"
         const val uploadTokenToProfile = "userProfile/updateFirebaseToken"
         const val updatePoliceCoordinates = "userProfile/updateCoordinates"
+        const val requestPoliceData = "request/getRequest"
     }
 }

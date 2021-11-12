@@ -56,7 +56,7 @@ class NormalUserDashBoard : AppCompatActivity() {
                     Log.e(TAG, "onCreate: roomID send $roomId")
                     val obj = JSONObject()
                     obj.put("roomId", roomId)
-                    obj.put("lat", "30.722")
+                    obj.put("lat", "30.722") //TODO need real data
                     obj.put("long", "76.85")
                     obj.put("phone_number", "8872365433")
                     emit("victimJoin", obj)

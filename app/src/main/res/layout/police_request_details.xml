@@ -20,8 +20,7 @@
             android:layout_marginStart="10dp"
             android:layout_marginTop="8dp"
             android:background="@drawable/back_button_white"
-            app:layout_constraintEnd_toStartOf="@+id/imageView"
-            app:layout_constraintHorizontal_bias="0.181"
+            android:elevation="20dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -96,7 +95,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="16dp"
-                    android:text="Profile"
+                    tools:text="Profile"
                     android:textSize="20sp"
                     app:layout_constraintBottom_toBottomOf="@+id/label_police_profile"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -109,7 +108,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="16dp"
-                    android:text="Request Location"
+                    android:text="Location"
                     android:textSize="20sp"
                     app:layout_constraintEnd_toStartOf="@+id/tv_loc"
                     app:layout_constraintHorizontal_bias="0.5"
@@ -122,7 +121,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="16dp"
-                    android:text="Loc here"
+                    tools:text="Loc here"
                     android:textSize="20sp"
                     app:layout_constraintBottom_toBottomOf="@+id/label_loc"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -136,7 +135,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="16dp"
-                    android:text="P/O/C"
+                    tools:text="P/O/C"
                     android:textSize="20sp"
                     app:layout_constraintBottom_toBottomOf="@+id/label_status"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -147,32 +146,82 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:text="Request Status"
+                    android:text="Status"
                     android:textSize="20sp"
                     app:layout_constraintStart_toStartOf="@+id/label_loc"
                     app:layout_constraintTop_toBottomOf="@+id/label_loc" />
 
 
                 <TextView
+                    android:id="@+id/label_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="Date"
+                    android:textSize="20sp"
+                    app:layout_constraintStart_toStartOf="@+id/label_status"
+                    app:layout_constraintTop_toBottomOf="@+id/label_status" />
+
+                <TextView
+                    android:id="@+id/tv_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:text="date"
+                    android:textSize="20sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/label_date_time"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/label_date_time" />                <TextView
                     android:id="@+id/label_date_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:text="Date n Time"
                     android:textSize="20sp"
                     app:layout_constraintStart_toStartOf="@+id/label_loc"
                     app:layout_constraintTop_toBottomOf="@+id/label_status" />
 
                 <TextView
-                    android:id="@+id/tv_date_time"
+                    android:id="@+id/label_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="Time"
+                    android:textSize="20sp"
+                    app:layout_constraintStart_toStartOf="@+id/label_date"
+                    app:layout_constraintTop_toBottomOf="@+id/label_date" />
+
+                <TextView
+                    android:id="@+id/tv_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="16dp"
-                    android:text="datetime"
+                    app:layout_constraintBottom_toBottomOf="@+id/label_time"
                     android:textSize="20sp"
-                    app:layout_constraintBottom_toBottomOf="@+id/label_date_time"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/label_date_time" />
+                    app:layout_constraintTop_toTopOf="@+id/label_time"
+                    tools:text="time" />
+
+                <TextView
+                    android:id="@+id/reqID"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="Request ID"
+                    android:textSize="20sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/label_time"
+                    app:layout_constraintTop_toBottomOf="@+id/label_time" />
+
+                <TextView
+                    android:id="@+id/tv_reqID"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:textSize="20sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/reqID"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/reqID"
+                    tools:text="reqID" />
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -223,7 +272,6 @@
             android:layout_marginEnd="16dp"
             android:background="@drawable/gradient_button"
             android:padding="10dp"
-            app:elevation="20dp"
             app:layout_constraintBottom_toBottomOf="@+id/cv_feedback"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/cv_feedback"

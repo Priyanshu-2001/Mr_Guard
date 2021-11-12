@@ -29,7 +29,7 @@ class VictimPoliceInteraction : AppCompatActivity() {
     private var mSocket: Socket? = null
     private var roomID = "3002"
     lateinit var adapter: ChatAdapter
-    lateinit var getuserLocation: getUserLocation
+    lateinit var getUserLocation: getUserLocation
     lateinit var locationRequest: LocationRequest
     private var fusedLocationProviderClient: FusedLocationProviderClient? = null
 
@@ -56,7 +56,6 @@ class VictimPoliceInteraction : AppCompatActivity() {
         viewModel = ViewModelProvider(this).get(chatViewModel::class.java)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_victim_police_interaction)
         binding.chatLayout.sendBtn.setOnClickListener {
-            Toast.makeText(this, "clicked", Toast.LENGTH_SHORT).show()
             val s = binding.chatLayout.messageBox.text
             if (s?.trim()?.length != 0) {
                 attemptSend(s)
@@ -93,12 +92,12 @@ class VictimPoliceInteraction : AppCompatActivity() {
     }
 
     private fun startEmittingCurrentLocation() {
-        getuserLocation = getUserLocation(this)
-        getuserLocation.checkSettingsAndStartLocationUpdates(
+        getUserLocation = getUserLocation(this)
+        getUserLocation.checkSettingsAndStartLocationUpdates(
             locationRequest,
             fusedLocationProviderClient!!
         )
-        getuserLocation.userLoc.observeForever { location ->
+        getUserLocation.userLoc.observeForever { location ->
             val obj = JSONObject()
             val locObj = JSONObject()
             obj.put("roomId", roomID)
@@ -125,7 +124,6 @@ class VictimPoliceInteraction : AppCompatActivity() {
             runOnUiThread(Runnable {
                 val data = args[0] as JSONObject
                 Log.e("victim got msg ", ": ${data.getString("msg")} ")
-                Log.e("TAG", "msg received in victim  $data")
                 val message: String
                 try {
                     message = data.getString("msg")
