@@ -8,16 +8,11 @@ import android.content.Intent
 import android.media.RingtoneManager
 import android.os.Build
 import android.util.Log
-import androidx.appcompat.app.AlertDialog
 import androidx.core.app.NotificationCompat
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.geek.mrguard.UI.MainActivity
-import com.geek.mrguard.UI.dashBoard.Police.PoliceDashBoard
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
-import org.json.JSONObject
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
-
-
 
 
 class MyFirebaseInstanceIDService : FirebaseMessagingService() {
@@ -36,6 +31,7 @@ class MyFirebaseInstanceIDService : FirebaseMessagingService() {
             intent.putExtra("body", it.body)
             intent.putExtra("roomID", remoteMessage.data["roomId"])
             intent.putExtra("victimPhoneNumber", remoteMessage.data["victimProfile"])
+            intent.putExtra("requestId", remoteMessage.data["requestId"])
             LocalBroadcastManager.getInstance(this).sendBroadcast(intent)
         }
     }

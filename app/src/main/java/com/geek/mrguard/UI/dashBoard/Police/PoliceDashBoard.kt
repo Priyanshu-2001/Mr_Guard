@@ -16,28 +16,34 @@ import android.util.Log
 import android.view.View
 import android.view.animation.Interpolator
 import android.view.animation.LinearInterpolator
+import android.widget.LinearLayout
+import android.widget.RelativeLayout
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.geek.mrguard.R
 import com.geek.mrguard.UI.MainActivity
+import com.geek.mrguard.UI.dashBoard.commonUser.AnalyticsDashboard
 import com.geek.mrguard.UI.dashBoard.commonUser.NormalUserDashBoard
 import com.geek.mrguard.adapters.ChatAdapter
 import com.geek.mrguard.databinding.ActivityDashBoardBinding
 import com.geek.mrguard.services.UpdatePolicePersonnelCoordinates
 import com.geek.mrguard.services.getUserLocation
+import com.geek.mrguard.utils.BitmapHelper
 import com.geek.mrguard.utils.PermissionCheck
 import com.geek.mrguard.viewModel.chatViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.*
+import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
@@ -48,6 +54,7 @@ import kotlinx.android.synthetic.main.activity_dash_board.*
 import kotlinx.android.synthetic.main.activity_normal_user_dash_board.*
 import kotlinx.android.synthetic.main.chat_fragment.*
 import kotlinx.android.synthetic.main.chat_fragment.view.*
+import kotlinx.android.synthetic.main.fragment_otp_fragment.*
 import kotlinx.android.synthetic.main.header.view.*
 import org.json.JSONException
 import org.json.JSONObject
@@ -65,12 +72,18 @@ class PoliceDashBoard : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var pref: SharedPreferences
     lateinit var viewModel: chatViewModel
     private var roomID = "3002"
+    private var requestID = "3002"
     private var victimPhoneNumber = "1234567890"
     lateinit var adapter: ChatAdapter
     lateinit var alertDialog: AlertDialog.Builder
     lateinit var locationRequest: LocationRequest
     lateinit var getuserLocation: getUserLocation
-    lateinit var previousLatLng : LatLng
+    var mapView: View? = null
+    lateinit var currentPhoneNumber: String
+    val bicycleIcon: BitmapDescriptor by lazy {
+        val color = ContextCompat.getColor(this, R.color.absent_span)
+        BitmapHelper.vectorToBitmap(this, R.drawable.error, color)
+    }
 
     override fun onStart() {
         super.onStart()
@@ -81,6 +94,7 @@ class PoliceDashBoard : AppCompatActivity(), OnMapReadyCallback {
         if (i != null) {
             roomID = i.getString("roomID", "-4")
             victimPhoneNumber = i.getString("victimContact", "-5")
+            requestID = i.getString("requestId","null")
             Log.e("TAG", "onStart: $roomID context $victimPhoneNumber")
             alertDialog.setCancelable(false)
             alertDialog.show()
@@ -108,13 +122,15 @@ class PoliceDashBoard : AppCompatActivity(), OnMapReadyCallback {
         binding.bottomsheet.chatBottomSheetLayout.animate().translationY((180).toFloat())
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.frag_map) as SupportMapFragment
+        mapView = mapFragment.requireView()
         mapFragment.getMapAsync(this)
         initializeAlertDialog()
         initializeLocationVariables()
         initializeSocket()
         mSocket?.connect()
         pref = getSharedPreferences("tokenFile", MODE_PRIVATE)
-        val currentPhoneNumber = pref.getString("phoneNumber", "Currently Unavailable")
+
+        currentPhoneNumber = pref.getString("phoneNumber", "Currently Unavailable").toString()
         binding.navLayout.getHeaderView(0).pName.text = currentPhoneNumber
         val drawer = binding.drawerIcon
         drawer.setOnClickListener {
@@ -125,6 +141,15 @@ class PoliceDashBoard : AppCompatActivity(), OnMapReadyCallback {
             locationRequest,
             fusedLocationProviderClient!!
         )
+        binding.endRequest.setOnClickListener {
+            AlertDialog.Builder(this).apply {
+                title = "Confirmation"
+                setMessage("Are You Sure \n You want to cancel")
+                setPositiveButton("CANCEL") { dialog, which ->
+                    cancelRequest(dialog)
+                }
+            }
+        }
         binding.navLayout.setNavigationItemSelectedListener {
             when (it.title) {
                 "Log Out" -> {
@@ -135,6 +160,10 @@ class PoliceDashBoard : AppCompatActivity(), OnMapReadyCallback {
                 }
                 "Current Location" -> {
                     updateCoordinate()
+                    true
+                }
+                "History"->{
+                    openDashboard()
                     true
                 }
                 else -> {
@@ -152,6 +181,15 @@ class PoliceDashBoard : AppCompatActivity(), OnMapReadyCallback {
         mSocket?.on("joinMessage", onPoliceJoinRoom)
 
         fetchLoc()
+    }
+
+    private fun openDashboard(){
+        startActivity(Intent(this,AnalyticsDashboard::class.java))
+    }
+
+    private fun cancelRequest(dialog: DialogInterface?) {
+        dialog?.dismiss()
+        binding.endRequest.visibility = View.GONE
     }
 
     private fun initializeLocationVariables() {
@@ -286,17 +324,34 @@ class PoliceDashBoard : AppCompatActivity(), OnMapReadyCallback {
             getuserLocation.userLoc.observe(this, {
                 val latlong = LatLng(currentLocation?.latitude!!, currentLocation?.longitude!!)
                 Log.e("TAG", "onMapReady: $latlong")
-//                drawMarker(latlong)
+                googleMap.moveCamera(CameraUpdateFactory.newLatLng(latlong))
             })
-
             googleMap.isMyLocationEnabled = true
+            movePositionOfLocationButton()
+
         } else
             PermissionCheck().requestPermissions(this)
     }
 
+    private fun movePositionOfLocationButton() {
+        if (mapView != null &&
+            mapView?.findViewById<LinearLayout>("1".toInt()) != null
+        ) {
+            // Get the button view
+            val locationButton = (mapView?.findViewById<LinearLayout>("1".toInt())!!
+                .parent as View).findViewById<View>("2".toInt())
+            // and next place it, on bottom right (as Google Maps app)
+            val layoutParams = locationButton.layoutParams as RelativeLayout.LayoutParams
+            layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0)
+//            layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE)
+            layoutParams.setMargins(0, 150, 30, 30)
+        }
+    }
+
     private fun drawMarker(latLong: LatLng) {
         val markerOption = MarkerOptions().position(latLong).title("Your Location")
-            .snippet(getAddress(latLong.latitude, latLong.longitude)).draggable(true)
+            .snippet(getAddress(latLong.latitude, latLong.longitude)).draggable(true).icon(bicycleIcon)
+
         gMap.animateCamera(CameraUpdateFactory.newLatLng(latLong))
         gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLong, 15f))
         currentMarker = gMap.addMarker(markerOption)
@@ -314,6 +369,7 @@ class PoliceDashBoard : AppCompatActivity(), OnMapReadyCallback {
             val msgBody = intent.getStringExtra("body")
             roomID = intent.getStringExtra("roomID").toString()
             victimPhoneNumber = intent.getStringExtra("victimPhoneNumber").toString()
+            requestID = intent.getStringExtra("requestId").toString()
             alertDialog.show()
         }
     }
@@ -337,10 +393,12 @@ class PoliceDashBoard : AppCompatActivity(), OnMapReadyCallback {
             val victimProfile = JSONObject()
             val policeProfile = JSONObject()
             victimProfile.put("phone", victimPhoneNumber)
-            policeProfile.put("phone", "9877371590")
+            policeProfile.put("phone", currentPhoneNumber)
             obj.put("roomId", roomID)
             obj.put("victimProfile", victimProfile)
             obj.put("policeProfile", policeProfile)
+            obj.put("requestId", requestID)
+            Log.e("TAG", "acceptRequest: requestID $requestID", )
             Log.e("TAG", "chat_message: " + on("chat_message", onNewMessage))
             on("joinMessage", onPoliceJoinRoom)
             on("victimNewCoordinates", onReceivingCoordinates)
@@ -359,10 +417,10 @@ class PoliceDashBoard : AppCompatActivity(), OnMapReadyCallback {
 
     private val participantListener =
         Emitter.Listener { args ->
-            this.runOnUiThread(Runnable {
+            this.runOnUiThread {
                 val data = args[0] as JSONObject
                 Log.e(NormalUserDashBoard.TAG, "message participants = $data: ")
-            })
+            }
         }
 
     private val onPoliceJoinRoom =
@@ -370,6 +428,7 @@ class PoliceDashBoard : AppCompatActivity(), OnMapReadyCallback {
             this.runOnUiThread {
                 val data = args[0] as JSONObject
                 Log.e("POLICE DASHBOARD", "Chat JOINED = $data: ")
+                binding.endRequest.visibility = View.VISIBLE
                 binding.bottomsheet.chatBottomSheetLayout.visibility = View.VISIBLE
                 binding.bottomsheet.chatBottomSheetLayout.animate().translationY((0).toFloat())
                 binding.bottomsheet.header.text = "Chat with Victim\n($victimPhoneNumber)"
@@ -426,7 +485,6 @@ class PoliceDashBoard : AppCompatActivity(), OnMapReadyCallback {
                 val lat = t * toPosition.latitude + (1 - t)* startLatLng.latitude
                 marker.position = LatLng(lat, lng)
                 if (t < 1.0) {
-                    // Post again 16ms later.
                     handler.postDelayed(this, 16)
                 } else {
                     marker.isVisible = !hideMarker

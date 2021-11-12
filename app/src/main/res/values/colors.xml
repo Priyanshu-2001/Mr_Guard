@@ -9,4 +9,5 @@
     <color name="white">#FFFFFFFF</color>
     <color name="green">#0F7C03</color>
     <color name="chatReceiveBg">#2F3E46</color>
+    <color name="absent_span">#D50000</color>
 </resources>

@@ -31,6 +31,18 @@
                 android:id="@+id/drawerIcon"
                 android:src="@drawable/hamburger"
                 />
+            <Button
+                android:id="@+id/endRequest"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="100dp"
+                android:background="@drawable/stroke_filled"
+                android:padding="5dp"
+                android:text="Task Completed"
+                android:textColor="@color/black"
+                android:visibility="gone"/>
+
 
 
             <fragment
@@ -38,7 +50,6 @@
                 android:name="com.google.android.gms.maps.SupportMapFragment"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginBottom="80dp"
                 app:layout_constraintBottom_toBottomOf="@id/bottomsheet"
                 app:layout_constraintEnd_toEndOf="parent"
                 tools:context=".UI.dashBoard.Police.PoliceDashBoard"

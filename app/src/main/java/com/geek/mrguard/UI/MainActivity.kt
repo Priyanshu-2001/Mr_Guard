@@ -32,6 +32,7 @@ class MainActivity : AppCompatActivity() {
                 Log.d("TAG", "victimProfile : ${i?.get("victimProfile")}")
                 bundle.putString("roomID", i?.get("roomId") as String?)
                 bundle.putString("victimContact", i?.get("victimProfile") as String?)
+                bundle.putString("requestID", i?.get("requestId") as String?)
 //                bundle.putString("roomID", i?.get("roomId") as String?)
             }
 //            val data = intent.extras to
@@ -53,6 +54,7 @@ class MainActivity : AppCompatActivity() {
                             val i1 = intent.extras
                             i.putExtra("roomID", i1?.get("roomId") as String?)
                             i.putExtra("victimContact", i1?.get("victimProfile") as String?)
+                            i.putExtra("requestID", i1?.get("requestId") as String?)
                         }
                     }
                     startActivity(i)
