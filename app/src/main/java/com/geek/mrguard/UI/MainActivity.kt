@@ -7,13 +7,21 @@ import androidx.appcompat.app.AppCompatActivity
 import com.geek.mrguard.R
 import com.geek.mrguard.UI.dashBoard.Police.PoliceDashBoard
 import com.geek.mrguard.UI.dashBoard.commonUser.NormalUserDashBoard
+import com.geek.mrguard.services.getUserLocation
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationServices
 import com.google.firebase.FirebaseApp
 
 class MainActivity : AppCompatActivity() {
     private val bundle = Bundle()
+    lateinit var getuserLocation: getUserLocation
+    private var fusedLocationProviderClient: FusedLocationProviderClient? = null
+    lateinit var locationRequest: LocationRequest
 
     override fun onCreate(savedInstanceState: Bundle?) {
         FirebaseApp.initializeApp(this)
+        initializeLocationVariables()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         try{
@@ -53,8 +61,17 @@ class MainActivity : AppCompatActivity() {
             }
         }catch (e : Exception){
             Log.e("TAG", "onCreate: Error while Loading Last Login")
-
         }
-
+    }
+    private fun initializeLocationVariables() {
+        locationRequest = LocationRequest.create()
+        locationRequest.numUpdates = 1
+        locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+        getuserLocation = getUserLocation(this)
+        getuserLocation.checkSettingsAndStartLocationUpdates(
+            locationRequest,
+            fusedLocationProviderClient!!
+        )
     }
 }
