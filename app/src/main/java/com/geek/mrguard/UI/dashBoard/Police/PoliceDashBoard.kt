@@ -43,10 +43,7 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.*
-import com.google.android.gms.maps.model.BitmapDescriptor
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.*
 import io.socket.client.IO
 import io.socket.client.Socket
 import io.socket.emitter.Emitter
@@ -82,7 +79,7 @@ class PoliceDashBoard : AppCompatActivity(), OnMapReadyCallback {
     lateinit var currentPhoneNumber: String
     val bicycleIcon: BitmapDescriptor by lazy {
         val color = ContextCompat.getColor(this, R.color.absent_span)
-        BitmapHelper.vectorToBitmap(this, R.drawable.error, color)
+        BitmapHelper.vectorToBitmap(this, R.drawable.problem, color)
     }
 
     override fun onStart() {
@@ -324,7 +321,8 @@ class PoliceDashBoard : AppCompatActivity(), OnMapReadyCallback {
             getuserLocation.userLoc.observe(this, {
                 val latlong = LatLng(currentLocation?.latitude!!, currentLocation?.longitude!!)
                 Log.e("TAG", "onMapReady: $latlong")
-                googleMap.moveCamera(CameraUpdateFactory.newLatLng(latlong))
+//                googleMap.moveCamera(CameraUpdateFactory.newLatLng(latlong))
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latlong,16f))
             })
             googleMap.isMyLocationEnabled = true
             movePositionOfLocationButton()
@@ -349,7 +347,7 @@ class PoliceDashBoard : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun drawMarker(latLong: LatLng) {
-        val markerOption = MarkerOptions().position(latLong).title("Your Location")
+        val markerOption = MarkerOptions().position(latLong).title("Victim Location")
             .snippet(getAddress(latLong.latitude, latLong.longitude)).draggable(true).icon(bicycleIcon)
 
         gMap.animateCamera(CameraUpdateFactory.newLatLng(latLong))
