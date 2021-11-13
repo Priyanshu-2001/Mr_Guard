@@ -21,8 +21,12 @@
             android:layout_marginTop="8dp"
             android:background="@drawable/back_button_white"
             android:elevation="20dp"
+            app:layout_constraintBottom_toBottomOf="@+id/imageView"
+            app:layout_constraintEnd_toStartOf="@+id/imageView"
+            app:layout_constraintHorizontal_bias="0.454"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.041" />
 
         <ImageView
             android:id="@+id/imageView"
