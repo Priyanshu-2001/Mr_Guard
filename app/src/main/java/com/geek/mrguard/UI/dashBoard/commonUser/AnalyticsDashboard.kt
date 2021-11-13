@@ -12,6 +12,7 @@ import com.geek.mrguard.databinding.PoliceDashboardBinding
 import com.geek.mrguard.services.PoliceDashboardService
 import com.geek.mrguard.viewModel.PoliceAnalyticsViewModel
 import com.geek.mrguard.viewModel.PoliceAnalyticsViewModelFactory
+import kotlinx.android.synthetic.main.police_request_details.*
 
 class  AnalyticsDashboard : AppCompatActivity() {
     lateinit var binding :PoliceDashboardBinding
@@ -25,6 +26,10 @@ class  AnalyticsDashboard : AppCompatActivity() {
         service = PoliceDashboardService(req_id)
         val pref = getSharedPreferences("tokenFile", MODE_PRIVATE)
         val isPolice = pref.getBoolean("isPolice",false)
+        back_button.setOnClickListener {
+            finish()
+        }
+        Log.e("TAG", "onCreate: token ${pref.getString("token","noTOKen")}", )
         viewModel = ViewModelProvider(this,PoliceAnalyticsViewModelFactory(service,application)).get(PoliceAnalyticsViewModel::class.java)
         viewModel.analyticsData().observe(this,{
             binding.tvRequests.text = it.status.size.toString()

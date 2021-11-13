@@ -27,7 +27,7 @@
         <entry key="..\:/MrGuard/app/src/main/res/layout/header.xml" value="0.25" />
         <entry key="..\:/MrGuard/app/src/main/res/layout/item_receive.xml" value="0.1" />
         <entry key="..\:/MrGuard/app/src/main/res/layout/item_sent.xml" value="0.264" />
-        <entry key="..\:/MrGuard/app/src/main/res/layout/police_dashboard.xml" value="1.0" />
+        <entry key="..\:/MrGuard/app/src/main/res/layout/police_dashboard.xml" value="0.128" />
         <entry key="..\:/MrGuard/app/src/main/res/layout/police_request_details.xml" value="0.176" />
         <entry key="..\:/MrGuard/app/src/main/res/layout/single_rcv_request.xml" value="0.264" />
         <entry key="..\:/MrGuard/app/src/main/res/menu/drawer.xml" value="0.19635416666666666" />
@@ -48,9 +48,6 @@
         <entry key="..\:/Users/Rishabh Raj Dhiman/AndroidStudioProjects/Mr_Guard/app/src/main/res/layout/fragment_otp_fragment.xml" value="0.23229166666666667" />
         <entry key="..\:/Users/Rishabh Raj Dhiman/AndroidStudioProjects/Mr_Guard/app/src/main/res/layout/fragment_otp_verification_b_s_list_dialog.xml" value="0.23229166666666667" />
         <entry key="..\:/Users/Rishabh Raj Dhiman/AndroidStudioProjects/Mr_Guard/app/src/main/res/layout/item_chat_left.xml" value="0.23229166666666667" />
-        <entry key="..\:/Users/Rishabh Raj Dhiman/AndroidStudioProjects/Mr_Guard/app/src/main/res/layout/police_dashboard.xml" value="0.2287179487179487" />
-        <entry key="..\:/Users/Rishabh Raj Dhiman/AndroidStudioProjects/Mr_Guard/app/src/main/res/layout/police_request_details.xml" value="0.2287179487179487" />
-        <entry key="..\:/Users/Rishabh Raj Dhiman/AndroidStudioProjects/Mr_Guard/app/src/main/res/layout/single_rcv_request.xml" value="0.23229166666666667" />
       </map>
     </option>
   </component>

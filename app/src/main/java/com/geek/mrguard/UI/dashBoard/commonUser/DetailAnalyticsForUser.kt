@@ -29,11 +29,13 @@ class DetailAnalyticsForUser : AppCompatActivity() {
                 PoliceAnalyticsViewModelFactory(service, application)
             ).get(PoliceAnalyticsViewModel::class.java)
             viewModel.analyticsData().observe(this, {
+
                 tv_police_profile.text = it.status[0].police.phone
                 tv_loc.text = it.status[0].police.location.lat.toString()
                 tv_status.text = it.status[0].status
                 tv_date.text = it.status[0].date
                 tv_time.text = it.status[0].time
+                tv_reqID.text = req_id
             })
         } else {
             Toast.makeText(this, "THere is Some Error", Toast.LENGTH_SHORT).show()

@@ -15,8 +15,8 @@ import java.util.*
 class PoliceDashboardService(private val req_id: String) {
     fun getPoliceHistory(context: Context): MutableLiveData<PoliceAnalyticsData> {
         val data = MutableLiveData<PoliceAnalyticsData>()
-        val url: String = if (req_id == "null") {
-            Globals.Endpoint + Globals.requestPoliceData + "?_id=" + req_id
+        val url: String = if (req_id != "null") {
+            Globals.Endpoint + Globals.requestPoliceData + "/" + req_id
         } else {
             Globals.Endpoint + Globals.requestPoliceData
         }
